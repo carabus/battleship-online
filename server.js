@@ -3,7 +3,21 @@ const app = express();
 
 let server;
 
+app.set('view engine', 'ejs');
+
 app.use(express.static('public'));
+
+app.get('/', function(req, res) {
+  res.render('pages/index');
+});
+
+app.get('/join/:roomId', function(req, res) {
+  res.render('pages/join', { roomId: req.params.roomId });
+});
+
+app.get('/game/:id', function(req, res) {
+  res.render('pages/game', { id: req.params.id });
+});
 
 function runServer() {
   const port = process.env.PORT || 8080;
