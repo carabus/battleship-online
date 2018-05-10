@@ -1,41 +1,13 @@
-$(handleApp);
+$(getOrCreatePlayer);
 
 function handleApp() {
-  getOrCreatePlayer();
+  displayPage();
   handleNewGame();
   handleCopyLink();
 }
 
-function getOrCreatePlayer() {
-  // if no player id only display create player
-  let playerId = window.localStorage.getItem('playerId');
-  if (playerId) {
-    displayPage(playerId);
-  } else {
-    createPlayerName(displayPage);
-  }
-}
-
-function createPlayerName(callback) {
-  /*
-  let settings = {
-    url: '/player',
-    dataType: 'json',
-    type: 'GET',
-    success: function(response) {
-      callback(data.playerId);
-    },
-    error: displayErrorMessage
-  };
-
-  $.ajax(settings);*/
-  setTimeout(function() {
-    callback('grotesque-firefly');
-  }, 100);
-}
-
 function displayPage(playerId) {
-  $('.player-info').html(`<p>Hello, ${playerId}</p>`);
+  $('.player-info').html(`<p>Hello, ${window.localStorage.playerId}</p>`);
   $('.new-game-section').show();
 }
 
