@@ -1,0 +1,12 @@
+.not-visible {
+  display: none;
+}
+
+body {
+  padding: 20px;
+}
+
+.join-game-link-input {
+  width: 270px;
+  border: none;
+}
