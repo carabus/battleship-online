@@ -1,0 +1,111 @@
+body {
+  padding: 20px;
+}
+
+.players-turns {
+  display: inline-block;
+}
+
+.players-board {
+  display: inline-block;
+  top: -36px;
+  position: relative;
+  margin-left: 20px;
+}
+
+.hit {
+  background-color: #ff7f50;
+}
+
+.miss {
+  background-color: #495057;
+}
+
+.empty {
+  background-color: white;
+}
+
+.ship {
+  background-color: black;
+}
+
+.shot {
+  background-image: url('../images/shot.svg');
+}
+
+[type='radio'] {
+  border: 0;
+  clip: rect(0 0 0 0);
+  height: 1px;
+  margin: -1px;
+  overflow: hidden;
+  padding: 0;
+  position: absolute;
+  width: 1px;
+}
+
+[type='radio'] + span {
+  display: block;
+}
+
+/* the basic, unchecked style */
+[type='radio'] + span::before {
+  box-sizing: border-box;
+  content: '';
+  display: inline-block;
+  width: 1.5em;
+  height: 1.5em;
+  vertical-align: -0.25em;
+  border: 0 solid #fff;
+  transition: 0.5s ease all;
+  cursor: pointer;
+}
+
+/* the checked style using the :checked pseudo class */
+[type='radio']:checked + span::before {
+  background-image: url('../images/target.svg');
+  cursor: pointer;
+}
+
+[type='radio']:disabled + span::before {
+  cursor: default;
+}
+
+fieldset {
+  border: 0;
+  margin: 0;
+  padding: 0;
+  margin-bottom: 20px;
+}
+
+/* Clearfix */
+.row::before,
+.row::after {
+  display: table;
+  content: '';
+}
+
+.row::after {
+  clear: both;
+}
+
+.row:first-of-type .column {
+  border-top: solid black 1px;
+}
+
+.column:first-of-type {
+  border-left-width: 1px;
+}
+
+.column {
+  border: black solid 1px;
+  border-left-width: 0;
+  border-top-width: 0;
+  float: left;
+  cursor: pointer;
+}
+
+.columnwidth {
+  width: 1.5em;
+  height: 1.5em;
+}

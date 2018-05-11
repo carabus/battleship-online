@@ -1,1 +1,35 @@
-<p>Hello world!</p>
+<!doctype html>
+<html lang="en">
+
+<head>
+  <title>Battleship Online</title>
+  <% include ../partials/head %>
+
+    <link rel="stylesheet" href="../css/game.css">
+    <script src="../js/game.js"></script>
+</head>
+
+<body>
+  <header role="banner">
+    <h1>Battleship online</h1>
+  </header>
+  <main role="main">
+    <section class="game-info">
+      <p class="game-name"></p>
+    </section>
+    <section class="game">
+      <div class="players-turns">
+        <form class="battleship-game">
+          <fieldset class="battleship-game-fieldset">
+            <legend></legend>
+          </fieldset>
+          <button type="submit">Fire!</button>
+        </form>
+      </div>
+      <div class="players-board"></div>
+    </section>
+    <div class="error-message"></div>
+  </main>
+</body>
+
+</html>
