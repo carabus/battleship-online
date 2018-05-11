@@ -1,5 +1,15 @@
 const CURRENT_GAME = {
-  ships: [[{ x: 0, y: 1 }, { x: 0, y: 2 }, { x: 0, y: 3 }], [{ x: 3, y: 6 }]],
+  ships: [
+    {
+      vertical: true,
+      points: [{ x: 0, y: 1 }, { x: 0, y: 2 }, { x: 0, y: 3 }]
+    },
+    { vertical: true, points: [{ x: 3, y: 6 }] },
+    {
+      vertical: false,
+      points: [{ x: 5, y: 5 }, { x: 6, y: 5 }, { x: 7, y: 5 }, { x: 8, y: 5 }]
+    }
+  ],
   opponentMoves: [{ x: 0, y: 1 }],
   hits: [{ x: 0, y: 1 }],
   misses: [{ x: 1, y: 0 }],
@@ -166,10 +176,27 @@ function displayPlayersBoard(data) {
 
   // add ships
   const ships = data.ships;
-  ships.forEach(points => {
-    points.forEach(point => {
-      grid[point.x][point.y].state = 'ship';
-    });
+  ships.forEach(ship => {
+    if (ship.points.length === 1) {
+      grid[ship.points[0].x][ship.points[0].y].state = 'single ship';
+    } else {
+      ship.points.forEach(function(point, index, points) {
+        console.log(point);
+        console.log(index);
+        console.log(points.length);
+        if (index === 0 && ship.vertical) {
+          grid[point.x][point.y].state = 'ship top';
+        } else if (index === 0 && !ship.vertical) {
+          grid[point.x][point.y].state = 'ship left';
+        } else if (index === points.length - 1 && ship.vertical) {
+          grid[point.x][point.y].state = 'ship bottom';
+        } else if (index === points.length - 1 && !ship.vertical) {
+          grid[point.x][point.y].state = 'ship right';
+        } else {
+          grid[point.x][point.y].state = 'ship';
+        }
+      });
+    }
   });
 
   // display opponents moves
@@ -183,9 +210,9 @@ function displayPlayersBoard(data) {
   for (let i = 0; i < 10; i++) {
     gridHtml += '<div class="row">';
     for (let j = 0; j < 10; j++) {
-      gridHtml += `<div class="column ${
+      gridHtml += `<div class="column columnwidth"><div class="${
         grid[j][i].state
-      } columnwidth">&nbsp;</div>`;
+      }">&nbsp;</div></div>`;
     }
     gridHtml += '</div>';
   }

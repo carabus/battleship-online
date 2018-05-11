@@ -27,6 +27,28 @@ body {
 
 .ship {
   background-color: black;
+  width: 100%;
+  height: 100%;
+}
+
+.ship.top {
+  border-radius: 50% 50% 0 0;
+}
+
+.ship.bottom {
+  border-radius: 0 0 50% 50%;
+}
+
+.ship.right {
+  border-radius: 0 50% 50% 0;
+}
+
+.ship.left {
+  border-radius: 50% 0 0 50%;
+}
+
+.ship.single {
+  border-radius: 50%;
 }
 
 .shot {
