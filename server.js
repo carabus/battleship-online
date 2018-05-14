@@ -1,14 +1,15 @@
 const express = require('express');
 const app = express();
-
 const http = require('http').Server(app);
-var io = require('socket.io')(http);
+const io = require('socket.io')(http);
 
-let server;
+const playerIdRouter = require('./playerIdRouter');
 
 app.set('view engine', 'ejs');
 
 app.use(express.static('public'));
+
+app.use('/player', playerIdRouter);
 
 app.get('/', function(req, res) {
   res.render('pages/index');
@@ -21,20 +22,6 @@ app.get('/join/:roomId', function(req, res) {
 app.get('/game/:id', function(req, res) {
   res.render('pages/game', { id: req.params.id });
 });
-
-function runServer() {
-  const port = process.env.PORT || 8080;
-  return new Promise((resolve, reject) => {
-    server = http
-      .listen(port, () => {
-        console.log(`Your app is listening on port ${port}`);
-        resolve(server);
-      })
-      .on('error', err => {
-        reject(err);
-      });
-  });
-}
 
 io.on('connection', function(socket) {
   socket.on('join-room', function(roomId) {
@@ -52,6 +39,22 @@ io.on('connection', function(socket) {
     socket.broadcast.to(data.roomId).emit('turn-update', data.coordinates);
   });
 });
+
+let server;
+
+function runServer() {
+  const port = process.env.PORT || 8080;
+  return new Promise((resolve, reject) => {
+    server = http
+      .listen(port, () => {
+        console.log(`Your app is listening on port ${port}`);
+        resolve(server);
+      })
+      .on('error', err => {
+        reject(err);
+      });
+  });
+}
 
 function closeServer() {
   return new Promise((resolve, reject) => {
