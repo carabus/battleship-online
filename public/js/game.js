@@ -1,4 +1,6 @@
+let socket;
 const CURRENT_GAME = {
+  roomId: '12345',
   ships: [
     {
       vertical: true,
@@ -20,8 +22,26 @@ const CURRENT_GAME = {
 $(handleApp);
 
 function handleApp() {
+  initRealTimeUpdates();
   displayGame(CURRENT_GAME);
   handlePlayersTurn();
+}
+
+function initRealTimeUpdates() {
+  socket = io();
+  socket.emit('join-room', CURRENT_GAME.roomId);
+  socket.on('turn-update', function(data) {
+    console.log(`Turn was made at coordinates ${data.x}, ${data.y}`);
+    updateOpponentMove(data);
+  });
+}
+
+function updateOpponentMove(coordinates) {
+  const cellId = `board${coordinates.x}${coordinates.y}`;
+  console.log(cellId);
+  $('.players-board')
+    .find(`#${cellId}`)
+    .addClass('shot');
 }
 
 function handlePlayersTurn() {
@@ -98,11 +118,13 @@ function displayTurnResult(data, coordinates) {
   $(`#${cellId}`).prop('checked', false);
   $(`#${cellId}`).attr('disabled', 'disabled');
 
-  // check that game is finished
+  // check if game is finished
   if (data.finished) {
     alert(`Game is finished. The winner is ${data.winner}`);
     disableForm('battleship-game');
   }
+
+  socket.emit('turn', { roomId: CURRENT_GAME.roomId, coordinates });
 }
 
 function getTurnResult(coordinates, callback) {
@@ -210,7 +232,7 @@ function displayPlayersBoard(data) {
   for (let i = 0; i < 10; i++) {
     gridHtml += '<div class="row">';
     for (let j = 0; j < 10; j++) {
-      gridHtml += `<div class="column columnwidth"><div class="${
+      gridHtml += `<div class="column columnwidth"><div id="board${j}${i}" class="${
         grid[j][i].state
       }">&nbsp;</div></div>`;
     }

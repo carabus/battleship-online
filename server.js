@@ -1,6 +1,9 @@
 const express = require('express');
 const app = express();
 
+const http = require('http').Server(app);
+var io = require('socket.io')(http);
+
 let server;
 
 app.set('view engine', 'ejs');
@@ -22,7 +25,7 @@ app.get('/game/:id', function(req, res) {
 function runServer() {
   const port = process.env.PORT || 8080;
   return new Promise((resolve, reject) => {
-    server = app
+    server = http
       .listen(port, () => {
         console.log(`Your app is listening on port ${port}`);
         resolve(server);
@@ -32,6 +35,23 @@ function runServer() {
       });
   });
 }
+
+io.on('connection', function(socket) {
+  socket.on('join-room', function(roomId) {
+    console.log('joined room: ' + roomId);
+    socket.join(roomId);
+  });
+
+  socket.on('turn', function(data) {
+    console.log(
+      `turn was made at ${data.roomId}, ${data.coordinates.x}, ${
+        data.coordinates.y
+      }`
+    );
+
+    socket.broadcast.to(data.roomId).emit('turn-update', data.coordinates);
+  });
+});
 
 function closeServer() {
   return new Promise((resolve, reject) => {
