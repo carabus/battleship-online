@@ -3,12 +3,12 @@ const CURRENT_GAME = {
   roomId: '12345',
   ships: [
     {
-      vertical: true,
+      isHorizontal: false,
       points: [{ x: 0, y: 1 }, { x: 0, y: 2 }, { x: 0, y: 3 }]
     },
-    { vertical: true, points: [{ x: 3, y: 6 }] },
+    { isHorizontal: true, points: [{ x: 3, y: 6 }] },
     {
-      vertical: false,
+      isHorizontal: false,
       points: [{ x: 5, y: 5 }, { x: 6, y: 5 }, { x: 7, y: 5 }, { x: 8, y: 5 }]
     }
   ],
@@ -206,13 +206,13 @@ function displayPlayersBoard(data) {
         console.log(point);
         console.log(index);
         console.log(points.length);
-        if (index === 0 && ship.vertical) {
+        if (index === 0 && !ship.isHorizontal) {
           grid[point.x][point.y].state = 'ship top';
-        } else if (index === 0 && !ship.vertical) {
+        } else if (index === 0 && ship.isHorizontal) {
           grid[point.x][point.y].state = 'ship left';
-        } else if (index === points.length - 1 && ship.vertical) {
+        } else if (index === points.length - 1 && !ship.isHorizontal) {
           grid[point.x][point.y].state = 'ship bottom';
-        } else if (index === points.length - 1 && !ship.vertical) {
+        } else if (index === points.length - 1 && ship.isHorizontal) {
           grid[point.x][point.y].state = 'ship right';
         } else {
           grid[point.x][point.y].state = 'ship';
