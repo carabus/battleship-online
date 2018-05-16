@@ -3,7 +3,7 @@ const router = require('express').Router();
 const jsonParser = require('body-parser').json();
 
 const { BattleshipGame } = require('../models/battleshipModel');
-
+const { GAME_TEMPLATE, GAME_LENGTH } = require('../vars');
 const gameGenerator = require('./battleshipGameGenerator');
 
 // join game
@@ -152,7 +152,7 @@ router.put('/:id', jsonParser, async (req, res) => {
 
     // check if current game is finished
     if (hit) {
-      if (attackerGame.hits.length >= 20) {
+      if (attackerGame.hits.length >= GAME_LENGTH) {
         attackerGame = await BattleshipGame.findByIdAndUpdate(
           attackerGame.id,
           {

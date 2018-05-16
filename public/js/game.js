@@ -6,16 +6,44 @@ function handleApp() {
   CURRENT_GAME = JSON.parse(CURRENT_GAME);
   initRealTimeUpdates();
   displayGame(CURRENT_GAME);
+  if (CURRENT_GAME.opponentId) {
+    socket.emit('joined', {
+      roomId: CURRENT_GAME.roomId,
+      playerId: CURRENT_GAME.playerId
+    });
+  }
   handlePlayersTurn();
 }
 
 function initRealTimeUpdates() {
   socket = io();
   socket.emit('join-room', CURRENT_GAME.roomId);
-  socket.on('turn-update', function(data) {
-    console.log(`Turn was made at coordinates ${data.x}, ${data.y}`);
-    updateOpponentMove(data);
+
+  socket.on('turn-update', function(coordinates) {
+    console.log(
+      `Turn was made at coordinates ${coordinates.x}, ${coordinates.y}`
+    );
+    updateOpponentMove(coordinates);
+    setPlayersTurn();
   });
+
+  socket.on('game-finished-update', function(winner) {
+    console.log(winner);
+    setGameFinished(winner);
+  });
+
+  socket.on('joined-update', function(opponentId) {
+    console.log(opponentId);
+    setGameInfo(opponentId);
+  });
+}
+
+function setGameInfo(opponentId) {
+  const playersMsg = !opponentId
+    ? 'waiting for an opponent to join the game...'
+    : `${CURRENT_GAME.playerId} VS ${opponentId}`;
+
+  $('.game-name').text(playersMsg);
 }
 
 function updateOpponentMove(coordinates) {
@@ -85,6 +113,12 @@ function disableForm(formClass) {
     .attr('disabled', 'disabled');
 }
 
+function enableForm(formClass) {
+  $(`.${formClass}`)
+    .find('fieldset, button[type="submit"]')
+    .removeAttr('disabled');
+}
+
 function displayTurnResult(data, coordinates) {
   const cellId = `${coordinates.x}${coordinates.y}`;
   console.log(cellId);
@@ -100,13 +134,34 @@ function displayTurnResult(data, coordinates) {
   $(`#${cellId}`).prop('checked', false);
   $(`#${cellId}`).attr('disabled', 'disabled');
 
-  // check if game is finished
-  if (data.finished) {
-    alert(`Game is finished. The winner is ${data.winner}`);
-    disableForm('battleship-game');
-  }
+  // Update turn information
+  setOpponetsTurn();
 
   socket.emit('turn', { roomId: CURRENT_GAME.roomId, coordinates });
+
+  // check if game is finished
+  if (data.finished) {
+    setGameFinished(data.winner);
+    socket.emit('game-finished', {
+      roomId: CURRENT_GAME.roomId,
+      winner: data.winner
+    });
+  }
+}
+
+function setOpponetsTurn() {
+  $('.game-state').text("Opponent's turn");
+  disableForm('battleship-game');
+}
+
+function setPlayersTurn() {
+  $('.game-state').text('Your turn');
+  enableForm('battleship-game');
+}
+
+function setGameFinished(winner) {
+  $('.game-state').text(`Game is finished. The winner is ${winner}`);
+  disableForm('battleship-game');
 }
 
 function getTurnResult(coordinates, callback) {
@@ -135,10 +190,12 @@ function getTurnResult(coordinates, callback) {
 }
 
 function displayGameInfo(data) {
-  $('.game-name').text(data.gameName);
-  $('.battleship-game-fieldset')
-    .find('legend')
-    .text(data.nextTurn ? 'Your turn' : "Opponent's turn");
+  setGameInfo(data.opponentId);
+  if (data.nextTurn) {
+    setPlayersTurn();
+  } else {
+    setOpponetsTurn();
+  }
 }
 
 function displayPlayersBoard(data) {

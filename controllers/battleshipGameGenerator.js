@@ -1,7 +1,7 @@
 'use strict';
 
 // define template - what kind of ships to place on the grid
-const template = [4, 3, 3, 2, 2, 2, 1, 1, 1, 1];
+const { GAME_TEMPLATE, GAME_LENGTH } = require('../vars');
 
 function generateShips() {
   // generate grid with coordinates and place availability information
@@ -16,7 +16,7 @@ function generateShips() {
 
   // Generate array of ship positions on the grid
   let ships = [];
-  template.forEach(function(templateItem) {
+  GAME_TEMPLATE.forEach(function(templateItem) {
     ships.push(tryToPlaceShip(grid, templateItem));
   });
   return ships;
@@ -82,4 +82,4 @@ function getRandomInt(min, max) {
   return Math.floor(Math.random() * (max - min + 1)) + min;
 }
 
-module.exports = { template, generateShips, getRandomInt };
+module.exports = { generateShips, getRandomInt };

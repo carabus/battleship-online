@@ -2,18 +2,19 @@ const expect = require('chai').expect;
 
 // import generate Ships
 const generator = require('../controllers/battleshipGameGenerator');
+const { GAME_TEMPLATE, GAME_LENGTH } = require('../vars');
 
 // unit tests for generate ships function
 describe('Game Generator', function() {
   it('should generate ship coordinates from template with *isHorizontal* and *points* keys', function() {
     const answer = generator.generateShips();
     expect(answer).to.be.an('array');
-    expect(answer).to.have.lengthOf(generator.template.length);
+    expect(answer).to.have.lengthOf(GAME_TEMPLATE.length);
     answer.forEach(function(ship, index) {
       expect(ship).to.include.keys('isHorizontal');
       expect(ship).to.include.keys('points');
       expect(ship.points).to.be.an('array');
-      expect(ship.points).to.have.lengthOf(generator.template[index]);
+      expect(ship.points).to.have.lengthOf(GAME_TEMPLATE[index]);
       ship.points.forEach(function(point) {
         expect(point).to.include.keys('x');
         expect(point).to.include.keys('y');

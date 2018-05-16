@@ -57,6 +57,18 @@ io.on('connection', function(socket) {
 
     socket.broadcast.to(data.roomId).emit('turn-update', data.coordinates);
   });
+
+  socket.on('game-finished', function(data) {
+    console.log(
+      `game was finished at ${data.roomId}. The winner is ${data.winner}`
+    );
+    socket.broadcast.to(data.roomId).emit('game-finished-update', data.winner);
+  });
+
+  socket.on('joined', function(data) {
+    console.log(`game was joined at ${data.roomId} by ${data.playerId}.`);
+    socket.broadcast.to(data.roomId).emit('joined-update', data.playerId);
+  });
 });
 
 mongoose.Promise = global.Promise;
