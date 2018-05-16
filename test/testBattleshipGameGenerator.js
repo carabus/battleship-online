@@ -33,30 +33,29 @@ describe('Game Generator', function() {
     expect(flatCoordinatesSet.size).to.equal(flatCoordinatesArray.length);
   });
 
-  /*
   it('should not generate ships that are next to each other', function() {
     let answer = generator.generateShips();
 
     let neighbour;
 
+    let itNum = 0;
     while (answer.length > 1) {
       const currentShip = answer.pop();
-
       const flatCoordinatesArray = convertToFlat(answer);
-
       currentShip.points.forEach(point => {
         neighbour = flatCoordinatesArray.find(otherPoint => {
           return (
-            Math.abs(point.x - otherPoint.x) === 1 ||
-            Math.abs(point.y - otherPoint.y) === 1
+            Math.abs(point.x - otherPoint.x) <= 1 &&
+            Math.abs(point.y - otherPoint.y) <= 1
           );
         });
       });
+      itNum++;
     }
 
     console.log(neighbour);
     expect(!neighbour).to.equal(true);
-  });*/
+  });
 });
 
 function convertToFlat(shipArray) {
