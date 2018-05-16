@@ -29,7 +29,16 @@ app.get('/join/:roomId', function(req, res) {
 });
 
 app.get('/game/:id', function(req, res) {
-  res.render('pages/game', { id: req.params.id });
+  // get game by id
+  BattleshipGame.findById(req.params.id)
+    .then(game => {
+      console.log(game);
+      res.render('pages/game', { game: game.serialize() });
+    })
+    .catch(err => {
+      console.error(err);
+      res.render('pages/game', { game: null });
+    });
 });
 
 // handle socket.io events

@@ -11,10 +11,10 @@ function joinGame(callback) {
   };
 
   console.log(dataObject);
-  /*
+
   let settings = {
     contentType: 'application/json',
-    url: '/battleship/join',
+    url: '/battleship',
     dataType: 'json',
     data: JSON.stringify(dataObject),
     type: 'POST',
@@ -22,10 +22,7 @@ function joinGame(callback) {
     error: displayErrorMessage
   };
 
-  $.ajax(settings);*/
-  setTimeout(function() {
-    callback({ id: '1234567890' });
-  }, 100);
+  $.ajax(settings);
 }
 
 function displayGame(data) {

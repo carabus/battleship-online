@@ -1,27 +1,9 @@
 let socket;
-const CURRENT_GAME = {
-  roomId: '12345',
-  ships: [
-    {
-      isHorizontal: false,
-      points: [{ x: 0, y: 1 }, { x: 0, y: 2 }, { x: 0, y: 3 }]
-    },
-    { isHorizontal: true, points: [{ x: 3, y: 6 }] },
-    {
-      isHorizontal: true,
-      points: [{ x: 5, y: 5 }, { x: 6, y: 5 }, { x: 7, y: 5 }, { x: 8, y: 5 }]
-    }
-  ],
-  opponentMoves: [{ x: 0, y: 1 }],
-  hits: [{ x: 0, y: 1 }],
-  misses: [{ x: 1, y: 0 }],
-  nextTurn: true,
-  gameName: 'grotesque-firefly vs splintered-rocket'
-};
 
 $(handleApp);
 
 function handleApp() {
+  CURRENT_GAME = JSON.parse(CURRENT_GAME);
   initRealTimeUpdates();
   displayGame(CURRENT_GAME);
   handlePlayersTurn();
@@ -128,8 +110,7 @@ function displayTurnResult(data, coordinates) {
 }
 
 function getTurnResult(coordinates, callback) {
-  /*
-  let completeUrl = `/battleship/${gameId}`;
+  let completeUrl = `/battleship/${CURRENT_GAME.id}`;
   let dataObject = {
     id: CURRENT_GAME.id,
     playerId: CURRENT_GAME.playerId,
@@ -151,31 +132,7 @@ function getTurnResult(coordinates, callback) {
 
   console.log(settings);
   $.ajax(settings);
-  */
-  setTimeout(function() {
-    callback(
-      { hit: true, finished: true, winner: 'grotesque-firefly' },
-      coordinates
-    );
-  }, 100);
 }
-
-/*
-function getSingleGame(gameId, callback) {
-  // Build api url based on parameters
-  let completeUrl = `/battleship/${gameId}`;
-
-  let settings = {
-    url: completeUrl,
-    dataType: 'json',
-    type: 'GET',
-    success: callback,
-    error: displayErrorMessage
-  };
-
-  $.ajax(settings);
-}
-*/
 
 function displayGameInfo(data) {
   $('.game-name').text(data.gameName);
@@ -243,6 +200,9 @@ function displayPlayersBoard(data) {
 }
 
 function displayGame(data) {
+  if (data === null) {
+    displayErrorMessage();
+  }
   displayGameInfo(data);
   displayPlayersBoard(data);
   displayPlayersTurns(data);

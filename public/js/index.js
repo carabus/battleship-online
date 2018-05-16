@@ -11,10 +11,6 @@ function displayPage(playerId) {
   $('.new-game-section').show();
 }
 
-function displayErrorMessage() {
-  $('.error-message').text('There was an error processing your request.');
-}
-
 function handleNewGame() {
   $('.new-battle').on('click', function(event) {
     const roomId = Date.now();
