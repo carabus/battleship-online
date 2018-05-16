@@ -3,12 +3,13 @@ const chaiHttp = require('chai-http');
 const expect = chai.expect;
 
 const { app, runServer, closeServer } = require('../server');
+const { TEST_DATABASE_URL } = require('../config');
 
 chai.use(chaiHttp);
 
 describe('Battleship App', function() {
   before(function() {
-    return runServer();
+    return runServer(TEST_DATABASE_URL);
   });
 
   after(function() {

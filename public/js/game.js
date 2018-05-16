@@ -1,39 +1,49 @@
 let socket;
-const CURRENT_GAME = {
-  roomId: '12345',
-  ships: [
-    {
-      vertical: true,
-      points: [{ x: 0, y: 1 }, { x: 0, y: 2 }, { x: 0, y: 3 }]
-    },
-    { vertical: true, points: [{ x: 3, y: 6 }] },
-    {
-      vertical: false,
-      points: [{ x: 5, y: 5 }, { x: 6, y: 5 }, { x: 7, y: 5 }, { x: 8, y: 5 }]
-    }
-  ],
-  opponentMoves: [{ x: 0, y: 1 }],
-  hits: [{ x: 0, y: 1 }],
-  misses: [{ x: 1, y: 0 }],
-  nextTurn: true,
-  gameName: 'grotesque-firefly vs splintered-rocket'
-};
 
 $(handleApp);
 
 function handleApp() {
+  CURRENT_GAME = JSON.parse(CURRENT_GAME);
   initRealTimeUpdates();
   displayGame(CURRENT_GAME);
+  if (CURRENT_GAME.opponentId) {
+    socket.emit('joined', {
+      roomId: CURRENT_GAME.roomId,
+      playerId: CURRENT_GAME.playerId
+    });
+  }
   handlePlayersTurn();
 }
 
 function initRealTimeUpdates() {
   socket = io();
   socket.emit('join-room', CURRENT_GAME.roomId);
-  socket.on('turn-update', function(data) {
-    console.log(`Turn was made at coordinates ${data.x}, ${data.y}`);
-    updateOpponentMove(data);
+
+  socket.on('turn-update', function(coordinates) {
+    console.log(
+      `Turn was made at coordinates ${coordinates.x}, ${coordinates.y}`
+    );
+    updateOpponentMove(coordinates);
+    setPlayersTurn();
   });
+
+  socket.on('game-finished-update', function(winner) {
+    console.log(winner);
+    setGameFinished(winner);
+  });
+
+  socket.on('joined-update', function(opponentId) {
+    console.log(opponentId);
+    setGameInfo(opponentId);
+  });
+}
+
+function setGameInfo(opponentId) {
+  const playersMsg = !opponentId
+    ? 'waiting for an opponent to join the game...'
+    : `${CURRENT_GAME.playerId} VS ${opponentId}`;
+
+  $('.game-name').text(playersMsg);
 }
 
 function updateOpponentMove(coordinates) {
@@ -87,7 +97,7 @@ function displayPlayersTurns(data) {
       const disabled = grid[j][i].state === 'empty' ? '' : 'disabled';
       htmlString += `<div class="column ${grid[j][i].state}">
       <label for="${j}${i}">
-      <input type="radio" id="${j}${i}" name="cell" ${disabled}>
+      <input type="radio" id="${j}${i}" name="cell" ${disabled} required>
       <span> </span>
       </label></div>`;
     }
@@ -101,6 +111,12 @@ function disableForm(formClass) {
   $(`.${formClass}`)
     .find('fieldset, button[type="submit"]')
     .attr('disabled', 'disabled');
+}
+
+function enableForm(formClass) {
+  $(`.${formClass}`)
+    .find('fieldset, button[type="submit"]')
+    .removeAttr('disabled');
 }
 
 function displayTurnResult(data, coordinates) {
@@ -118,18 +134,38 @@ function displayTurnResult(data, coordinates) {
   $(`#${cellId}`).prop('checked', false);
   $(`#${cellId}`).attr('disabled', 'disabled');
 
-  // check if game is finished
-  if (data.finished) {
-    alert(`Game is finished. The winner is ${data.winner}`);
-    disableForm('battleship-game');
-  }
+  // Update turn information
+  setOpponetsTurn();
 
   socket.emit('turn', { roomId: CURRENT_GAME.roomId, coordinates });
+
+  // check if game is finished
+  if (data.finished) {
+    setGameFinished(data.winner);
+    socket.emit('game-finished', {
+      roomId: CURRENT_GAME.roomId,
+      winner: data.winner
+    });
+  }
+}
+
+function setOpponetsTurn() {
+  $('.game-state').text("Opponent's turn");
+  disableForm('battleship-game');
+}
+
+function setPlayersTurn() {
+  $('.game-state').text('Your turn');
+  enableForm('battleship-game');
+}
+
+function setGameFinished(winner) {
+  $('.game-state').text(`Game is finished. The winner is ${winner}`);
+  disableForm('battleship-game');
 }
 
 function getTurnResult(coordinates, callback) {
-  /*
-  let completeUrl = `/battleship/${gameId}`;
+  let completeUrl = `/battleship/${CURRENT_GAME.id}`;
   let dataObject = {
     id: CURRENT_GAME.id,
     playerId: CURRENT_GAME.playerId,
@@ -151,37 +187,15 @@ function getTurnResult(coordinates, callback) {
 
   console.log(settings);
   $.ajax(settings);
-  */
-  setTimeout(function() {
-    callback(
-      { hit: true, finished: true, winner: 'grotesque-firefly' },
-      coordinates
-    );
-  }, 100);
 }
-
-/*
-function getSingleGame(gameId, callback) {
-  // Build api url based on parameters
-  let completeUrl = `/battleship/${gameId}`;
-
-  let settings = {
-    url: completeUrl,
-    dataType: 'json',
-    type: 'GET',
-    success: callback,
-    error: displayErrorMessage
-  };
-
-  $.ajax(settings);
-}
-*/
 
 function displayGameInfo(data) {
-  $('.game-name').text(data.gameName);
-  $('.battleship-game-fieldset')
-    .find('legend')
-    .text(data.nextTurn ? 'Your turn' : "Opponent's turn");
+  setGameInfo(data.opponentId);
+  if (data.nextTurn) {
+    setPlayersTurn();
+  } else {
+    setOpponetsTurn();
+  }
 }
 
 function displayPlayersBoard(data) {
@@ -206,13 +220,13 @@ function displayPlayersBoard(data) {
         console.log(point);
         console.log(index);
         console.log(points.length);
-        if (index === 0 && ship.vertical) {
+        if (index === 0 && !ship.isHorizontal) {
           grid[point.x][point.y].state = 'ship top';
-        } else if (index === 0 && !ship.vertical) {
+        } else if (index === 0 && ship.isHorizontal) {
           grid[point.x][point.y].state = 'ship left';
-        } else if (index === points.length - 1 && ship.vertical) {
+        } else if (index === points.length - 1 && !ship.isHorizontal) {
           grid[point.x][point.y].state = 'ship bottom';
-        } else if (index === points.length - 1 && !ship.vertical) {
+        } else if (index === points.length - 1 && ship.isHorizontal) {
           grid[point.x][point.y].state = 'ship right';
         } else {
           grid[point.x][point.y].state = 'ship';
@@ -232,7 +246,7 @@ function displayPlayersBoard(data) {
   for (let i = 0; i < 10; i++) {
     gridHtml += '<div class="row">';
     for (let j = 0; j < 10; j++) {
-      gridHtml += `<div class="column columnwidth"><div id="board${j}${i}" class="${
+      gridHtml += `<div class="column columnwidth"><div id="board${j}${i}" class="board ${
         grid[j][i].state
       }">&nbsp;</div></div>`;
     }
@@ -243,9 +257,15 @@ function displayPlayersBoard(data) {
 }
 
 function displayGame(data) {
+  if (data === null) {
+    displayErrorMessage();
+  }
   displayGameInfo(data);
   displayPlayersBoard(data);
   displayPlayersTurns(data);
+  if (data.gameFinished) {
+    setGameFinished(data.winner);
+  }
 }
 
 function displayErrorMessage() {

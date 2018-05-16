@@ -1,15 +1,25 @@
 const express = require('express');
 const app = express();
-
 const http = require('http').Server(app);
-var io = require('socket.io')(http);
+const io = require('socket.io')(http);
+const mongoose = require('mongoose');
+const morgan = require('morgan');
 
-let server;
+const { PORT, DATABASE_URL } = require('./config');
+const { BattleshipGame } = require('./models/battleshipModel');
+const playerIdRouter = require('./controllers/playerIdRouter');
+const battleshipRouter = require('./controllers/battleshipRouter');
 
 app.set('view engine', 'ejs');
 
+app.use(morgan('common'));
+
 app.use(express.static('public'));
 
+app.use('/player', playerIdRouter);
+app.use('/battleship', battleshipRouter);
+
+// render ejs pages
 app.get('/', function(req, res) {
   res.render('pages/index');
 });
@@ -19,23 +29,19 @@ app.get('/join/:roomId', function(req, res) {
 });
 
 app.get('/game/:id', function(req, res) {
-  res.render('pages/game', { id: req.params.id });
+  // get game by id
+  BattleshipGame.findById(req.params.id)
+    .then(game => {
+      console.log(game);
+      res.render('pages/game', { game: game.serialize() });
+    })
+    .catch(err => {
+      console.error(err);
+      res.render('pages/game', { game: null });
+    });
 });
 
-function runServer() {
-  const port = process.env.PORT || 8080;
-  return new Promise((resolve, reject) => {
-    server = http
-      .listen(port, () => {
-        console.log(`Your app is listening on port ${port}`);
-        resolve(server);
-      })
-      .on('error', err => {
-        reject(err);
-      });
-  });
-}
-
+// handle socket.io events
 io.on('connection', function(socket) {
   socket.on('join-room', function(roomId) {
     console.log('joined room: ' + roomId);
@@ -51,24 +57,60 @@ io.on('connection', function(socket) {
 
     socket.broadcast.to(data.roomId).emit('turn-update', data.coordinates);
   });
+
+  socket.on('game-finished', function(data) {
+    console.log(
+      `game was finished at ${data.roomId}. The winner is ${data.winner}`
+    );
+    socket.broadcast.to(data.roomId).emit('game-finished-update', data.winner);
+  });
+
+  socket.on('joined', function(data) {
+    console.log(`game was joined at ${data.roomId} by ${data.playerId}.`);
+    socket.broadcast.to(data.roomId).emit('joined-update', data.playerId);
+  });
 });
 
-function closeServer() {
+mongoose.Promise = global.Promise;
+let server;
+
+function runServer(databaseUrl, port = PORT) {
   return new Promise((resolve, reject) => {
-    console.log('Closing server');
-    server.close(err => {
+    console.log(databaseUrl);
+    mongoose.connect(databaseUrl, err => {
       if (err) {
-        reject(err);
-        // so we don't also call `resolve()`
-        return;
+        return reject(err);
       }
-      resolve();
+      server = http
+        .listen(port, () => {
+          console.log(`Your app is listening on port ${port}`);
+          resolve();
+        })
+        .on('error', err => {
+          mongoose.disconnect();
+          reject(err);
+        });
+    });
+  });
+}
+
+// Stop server
+function closeServer() {
+  return mongoose.disconnect().then(() => {
+    return new Promise((resolve, reject) => {
+      console.log('Closing server');
+      server.close(err => {
+        if (err) {
+          return reject(err);
+        }
+        resolve();
+      });
     });
   });
 }
 
 if (require.main === module) {
-  runServer().catch(err => console.error(err));
+  runServer(DATABASE_URL).catch(err => console.error(err));
 }
 
 module.exports = { app, runServer, closeServer };

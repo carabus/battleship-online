@@ -10,12 +10,26 @@
 </head>
 
 <body>
+  <script>
+    let CURRENT_GAME = '<%- JSON.stringify(game) %>';
+  </script>
+  <nav role="banner">
+    <ul>
+      <li>
+        <a href="/" target="_self">Return to Dashboard</a>
+      </li>
+      <li>
+        <a href="/" target="_self">Help</a>
+      </li>
+    </ul>
+  </nav>
   <header role="banner">
     <h1>Battleship online</h1>
   </header>
   <main role="main">
     <section class="game-info">
       <p class="game-name"></p>
+      <p class="game-state"></p>
     </section>
     <section class="game">
       <div class="players-turns">

@@ -1,5 +1,5 @@
-function setPlayerAndHandleApp(data) {
-  window.localStorage.setItem('playerId', data.playerId);
+function setPlayerAndHandleApp(playerId) {
+  window.localStorage.setItem('playerId', playerId);
   handleApp();
 }
 
@@ -14,19 +14,19 @@ function getOrCreatePlayer() {
 }
 
 function createPlayerName(callback) {
-  /*
   let settings = {
     url: '/player',
     dataType: 'json',
     type: 'GET',
-    success: function(response) {
+    success: function(data) {
       callback(data.playerId);
     },
     error: displayErrorMessage
   };
 
-  $.ajax(settings);*/
-  setTimeout(function() {
-    callback({ playerId: 'grotesque-firefly' });
-  }, 100);
+  $.ajax(settings);
+}
+
+function displayErrorMessage() {
+  $('.error-message').text('There was an error processing your request.');
 }
