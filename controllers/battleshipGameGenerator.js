@@ -63,7 +63,7 @@ function tryToPlaceShip(grid, length) {
     grid[point.x][point.y].available = false;
     updateAvailabilityAroundPoint(point, grid);
   });
-  return {isHorizontal, points: shipCoordinates};
+  return { isHorizontal, points: shipCoordinates };
 }
 
 function updateAvailabilityAroundPoint(point, grid) {

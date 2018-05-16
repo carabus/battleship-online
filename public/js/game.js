@@ -8,7 +8,7 @@ const CURRENT_GAME = {
     },
     { isHorizontal: true, points: [{ x: 3, y: 6 }] },
     {
-      isHorizontal: false,
+      isHorizontal: true,
       points: [{ x: 5, y: 5 }, { x: 6, y: 5 }, { x: 7, y: 5 }, { x: 8, y: 5 }]
     }
   ],

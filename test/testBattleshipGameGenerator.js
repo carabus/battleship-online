@@ -1,7 +1,7 @@
 const expect = require('chai').expect;
 
 // import generate Ships
-const generator = require('../battleshipGameGenerator');
+const generator = require('../controllers/battleshipGameGenerator');
 
 // unit tests for generate ships function
 describe('Game Generator', function() {
@@ -24,12 +24,7 @@ describe('Game Generator', function() {
   it('should generate unique coordinates for each ship', function() {
     const answer = generator.generateShips();
 
-    const flatCoordinatesArray = [];
-    answer.forEach(ship => {
-      ship.points.forEach(point => {
-        flatCoordinatesArray.push(point);
-      });
-    });
+    const flatCoordinatesArray = convertToFlat(answer);
 
     let flatCoordinatesSet = new Set();
     flatCoordinatesArray.forEach(element =>
@@ -37,4 +32,39 @@ describe('Game Generator', function() {
     );
     expect(flatCoordinatesSet.size).to.equal(flatCoordinatesArray.length);
   });
+
+  /*
+  it('should not generate ships that are next to each other', function() {
+    let answer = generator.generateShips();
+
+    let neighbour;
+
+    while (answer.length > 1) {
+      const currentShip = answer.pop();
+
+      const flatCoordinatesArray = convertToFlat(answer);
+
+      currentShip.points.forEach(point => {
+        neighbour = flatCoordinatesArray.find(otherPoint => {
+          return (
+            Math.abs(point.x - otherPoint.x) === 1 ||
+            Math.abs(point.y - otherPoint.y) === 1
+          );
+        });
+      });
+    }
+
+    console.log(neighbour);
+    expect(!neighbour).to.equal(true);
+  });*/
 });
+
+function convertToFlat(shipArray) {
+  const flatCoordinatesArray = [];
+  shipArray.forEach(ship => {
+    ship.points.forEach(point => {
+      flatCoordinatesArray.push(point);
+    });
+  });
+  return flatCoordinatesArray;
+}
