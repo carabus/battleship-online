@@ -97,7 +97,7 @@ function displayPlayersTurns(data) {
       const disabled = grid[j][i].state === 'empty' ? '' : 'disabled';
       htmlString += `<div class="column ${grid[j][i].state}">
       <label for="${j}${i}">
-      <input type="radio" id="${j}${i}" name="cell" ${disabled}>
+      <input type="radio" id="${j}${i}" name="cell" ${disabled} required>
       <span> </span>
       </label></div>`;
     }
@@ -246,7 +246,7 @@ function displayPlayersBoard(data) {
   for (let i = 0; i < 10; i++) {
     gridHtml += '<div class="row">';
     for (let j = 0; j < 10; j++) {
-      gridHtml += `<div class="column columnwidth"><div id="board${j}${i}" class="${
+      gridHtml += `<div class="column columnwidth"><div id="board${j}${i}" class="board ${
         grid[j][i].state
       }">&nbsp;</div></div>`;
     }
@@ -263,6 +263,9 @@ function displayGame(data) {
   displayGameInfo(data);
   displayPlayersBoard(data);
   displayPlayersTurns(data);
+  if (data.gameFinished) {
+    setGameFinished(data.winner);
+  }
 }
 
 function displayErrorMessage() {
