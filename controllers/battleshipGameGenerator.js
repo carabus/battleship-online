@@ -1,7 +1,7 @@
 'use strict';
 
 // define template - what kind of ships to place on the grid
-const { GAME_TEMPLATE, GAME_LENGTH } = require('../vars');
+const { GAME_TEMPLATE, GAME_LENGTH } = require('../gameSettings');
 
 function generateShips() {
   // generate grid with coordinates and place availability information

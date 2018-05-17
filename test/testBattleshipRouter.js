@@ -7,6 +7,7 @@ const { BattleshipGame } = require('../models/battleshipModel');
 const { TEST_DATABASE_URL } = require('../config');
 const { app, runServer, closeServer } = require('../server');
 const gameGenerator = require('../controllers/battleshipGameGenerator');
+const { GAME_TEMPLATE, GAME_LENGTH } = require('../gameSettings');
 
 const expect = chai.expect;
 
@@ -234,7 +235,7 @@ describe('Battleship Game API', function() {
       let playerId = '';
       return seedBattleshipGameData(2, newRoomId).then(function(games) {
         let hitsValue = [];
-        for (let i = 0; i < 19; i++) {
+        for (let i = 0; i < GAME_LENGTH - 1; i++) {
           hitsValue.push({ x: 1, y: 1 });
         }
         return BattleshipGame.findByIdAndUpdate(

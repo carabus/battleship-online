@@ -3,7 +3,7 @@ const router = require('express').Router();
 const jsonParser = require('body-parser').json();
 
 const { BattleshipGame } = require('../models/battleshipModel');
-const { GAME_TEMPLATE, GAME_LENGTH } = require('../vars');
+const { GAME_TEMPLATE, GAME_LENGTH } = require('../gameSettings');
 const gameGenerator = require('./battleshipGameGenerator');
 
 // join game

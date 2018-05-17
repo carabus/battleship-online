@@ -2,7 +2,7 @@ const expect = require('chai').expect;
 
 // import generate Ships
 const generator = require('../controllers/battleshipGameGenerator');
-const { GAME_TEMPLATE, GAME_LENGTH } = require('../vars');
+const { GAME_TEMPLATE, GAME_LENGTH } = require('../gameSettings');
 
 // unit tests for generate ships function
 describe('Game Generator', function() {
