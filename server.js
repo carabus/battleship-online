@@ -30,7 +30,7 @@ app.get('/join/:roomId', function(req, res) {
 
 app.get('/game/:id', function(req, res) {
   // get game by id
-  BattleshipGame.findById(req.params.id)
+  return BattleshipGame.findById(req.params.id)
     .then(game => {
       console.log(game);
       res.render('pages/game', { game: game.serialize() });

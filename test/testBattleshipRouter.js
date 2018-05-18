@@ -33,8 +33,13 @@ function generateBattleshipGameData(roomId) {
 }
 
 function tearDownDb() {
-  console.warn('Deleting test database');
-  mongoose.connection.dropDatabase();
+  return new Promise((resolve, reject) => {
+    console.warn('Deleting database');
+    mongoose.connection
+      .dropDatabase()
+      .then(result => resolve(result))
+      .catch(err => reject(err));
+  });
 }
 
 describe('Battleship Game API', function() {
@@ -43,11 +48,13 @@ describe('Battleship Game API', function() {
   });
 
   afterEach(function() {
-    return tearDownDb();
+    // return tearDownDb();
   });
 
   after(function() {
-    return closeServer();
+    return tearDownDb().then(function(res) {
+      return closeServer();
+    });
   });
 
   describe('POST endpoint: join game', function() {

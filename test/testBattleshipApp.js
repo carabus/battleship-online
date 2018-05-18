@@ -44,7 +44,7 @@ describe('Battleship App', function() {
     it('should return status 200 and html when navigated to', function() {
       return chai
         .request(app)
-        .get('/game/1234567')
+        .get('/game/5afde311d0f6b2001450d26e')
         .then(function(res) {
           expect(res).to.have.status(200);
           expect(res).to.be.html;
