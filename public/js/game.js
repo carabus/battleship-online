@@ -13,6 +13,7 @@ function handleApp() {
     });
   }
   handlePlayersTurn();
+  handleCopyLink();
 }
 
 function initRealTimeUpdates() {
@@ -40,10 +41,19 @@ function initRealTimeUpdates() {
 
 function setGameInfo(opponentId) {
   const playersMsg = !opponentId
-    ? 'waiting for an opponent to join the game...'
+    ? `It looks like no one has joined your game. Send this link ${generateJoinLink()} to your friend so that they can join.`
     : `${CURRENT_GAME.playerId} VS ${opponentId}`;
 
-  $('.game-name').text(playersMsg);
+  $('.game-name').html(playersMsg);
+}
+
+function generateJoinLink() {
+  return `<span class="join-game-link">${window.location.origin}/join/${
+    CURRENT_GAME.roomId
+  }</span>
+  <button type="button" class="copy" id="copy">
+    <i class="far fa-copy"></i>
+  </button>`;
 }
 
 function updateOpponentMove(coordinates) {
@@ -266,6 +276,17 @@ function displayGame(data) {
   if (data.gameFinished) {
     setGameFinished(data.winner);
   }
+}
+
+function handleCopyLink() {
+  $('.copy').on('click', function(event) {
+    var $temp = $('<input>');
+    $('body').append($temp);
+    console.log($('.join-game-link').text());
+    $temp.val($('.join-game-link').text()).select();
+    document.execCommand('copy');
+    $temp.remove();
+  });
 }
 
 function displayErrorMessage() {
