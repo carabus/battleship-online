@@ -1,6 +1,10 @@
 function setPlayerAndHandleApp(playerId) {
-  window.localStorage.setItem('playerId', playerId);
+  setPlayer(playerId);
   handleApp();
+}
+
+function setPlayer(playerId) {
+  window.localStorage.setItem('playerId', playerId);
 }
 
 function getOrCreatePlayer() {

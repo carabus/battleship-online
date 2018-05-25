@@ -1,4 +1,4 @@
 node_modules
 .vscode
 testBattleshipRouter1.js
-public/.DS_Store
+*.DS_Store

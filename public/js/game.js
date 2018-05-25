@@ -14,6 +14,13 @@ function handleApp() {
   }
   handlePlayersTurn();
   handleCopyLink();
+  handleSelectTarget();
+}
+
+function handleSelectTarget() {
+  $('input[type=radio][name=cell]').on('change', function() {
+    $('.fire').show();
+  });
 }
 
 function initRealTimeUpdates() {

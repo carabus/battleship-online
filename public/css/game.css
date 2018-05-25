@@ -152,3 +152,25 @@ ul {
   padding-left: 0;
   padding-right: 0;
 }
+
+.not-visible {
+  display: none;
+}
+
+.fire {
+  position: absolute;
+  left: 50%;
+  top: 50%;
+  transform: translate(-50%, -50%);
+
+  margin: 5px;
+  font-family: 'Lato', sans-serif;
+  text-transform: capitalize;
+  font-size: 18px;
+  padding: 16px;
+  color: black;
+  background-color: #ff7f50;
+  border: solid #f86029 2px;
+  cursor: pointer;
+  z-index: 999;
+}
