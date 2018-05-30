@@ -9,41 +9,79 @@
     <script src="../js/game.js"></script>
 </head>
 
-<body>
+<body class="bg">
   <script>
     let CURRENT_GAME = '<%- JSON.stringify(game) %>';
   </script>
-  <nav role="banner">
+
+  <nav role="banner" class="navigation">
+    <!--<img class="logo" src="../images/ship.svg" alt="Battleship Online">-->
     <ul>
       <li>
-        <a href="/" target="_self">Return to Dashboard</a>
+        <a href="/" target="_self">
+          <i class="fas fa-home"></i>
+          Back to home page</a>
+      </li>
+      <!--
+      <li>
+        <a href="/" target="_self">
+          <i class="fas fa-book"></i> Battleship Game Rules</a>
       </li>
       <li>
-        <a href="/" target="_self">Help</a>
-      </li>
+        <a href="/" target="_self">
+          <i class="fas fa-question"></i> Help</a>
+      </li>-->
     </ul>
   </nav>
-  <!--
-  <header role="banner">
-    <h1>Battleship online</h1>
-  </header>-->
+
   <main role="main">
-    <!--
-    <section class="game-info">
-      <p class="game-name"></p>
-      <p class="game-state"></p>
+
+    <section class="game-incomplete not-visible">
+      <div class="row">
+        <p>Almost ready to battle. Send this link to a friend so that they can join.</p>
+      </div>
+      <div class="row">
+        <span class="join-game-link"></span>
+        <button type="button" class="copy">
+          <i class="far fa-copy"></i>
+        </button>
+      </div>
+      <div class="row">
+        <button type="button" class="all-done-button">Got it</button>
+      </div>
     </section>
-  -->
-    <section class="game">
-      <div class="players-turns">
+
+    <section class="game not-visible">
+      <div class="row">
+        <p>
+          <i class="fas fa-user-circle"></i>
+          <span class="opponent"></span>
+        </p>
+      </div>
+      <div class="row">
         <form class="battleship-game">
-          <fieldset class="battleship-game-fieldset">
-            <legend></legend>
-          </fieldset>
+          <div class="players-turns shadow">
+
+
+
+            <fieldset class="battleship-game-fieldset">
+              <legend></legend>
+            </fieldset>
+
+
+          </div>
           <button type="submit" class="fire not-visible">Fire!</button>
         </form>
       </div>
-      <div class="players-board"></div>
+      <div class="row">
+        <div class="players-board"></div>
+      </div>
+      <div class="row">
+        <p>
+          <i class="fas fa-user-circle"></i>
+          <span class="player"></span>
+        </p>
+      </div>
     </section>
     <div class="error-message"></div>
   </main>

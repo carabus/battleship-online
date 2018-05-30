@@ -5,16 +5,43 @@ $(handleApp);
 function handleApp() {
   CURRENT_GAME = JSON.parse(CURRENT_GAME);
   initRealTimeUpdates();
-  displayGame(CURRENT_GAME);
+
   if (CURRENT_GAME.opponentId) {
+    displayGame(CURRENT_GAME);
     socket.emit('joined', {
       roomId: CURRENT_GAME.roomId,
       playerId: CURRENT_GAME.playerId
     });
+  } else {
+    displayIncompleteRoomMessage();
   }
+
+  handleAllDoneButton();
   handlePlayersTurn();
   handleCopyLink();
   handleSelectTarget();
+}
+
+function displayIncompleteRoomMessage() {
+  $('.join-game-link').text(generateJoinLink());
+  $('.game-incomplete').show();
+}
+
+function handleCopyLink() {
+  $('.copy').on('click', function(event) {
+    var $temp = $('<input>');
+    $('body').append($temp);
+    $temp.val($('.join-game-link').text()).select();
+    document.execCommand('copy');
+    $temp.remove();
+  });
+}
+
+function handleAllDoneButton() {
+  $('.all-done-button').on('click', function(event) {
+    $('.game-incomplete').hide();
+    displayGame(CURRENT_GAME);
+  });
 }
 
 function handleSelectTarget() {
@@ -41,26 +68,25 @@ function initRealTimeUpdates() {
   });
 
   socket.on('joined-update', function(opponentId) {
-    console.log(opponentId);
-    setGameInfo(opponentId);
+    $('.game-incomplete').hide();
+    if (!CURRENT_GAME.opponentId) {
+      CURRENT_GAME.opponentId = opponentId;
+      displayGame(CURRENT_GAME);
+    }
   });
 }
 
 function setGameInfo(opponentId) {
   const playersMsg = !opponentId
-    ? `It looks like no one has joined your game. Send this link ${generateJoinLink()} to your friend so that they can join.`
-    : `${CURRENT_GAME.playerId} VS ${opponentId}`;
+    ? `Waiting for an opponent to join...`
+    : opponentId;
 
-  $('.game-name').html(playersMsg);
+  $('.opponent').text(playersMsg);
+  $('.player').text(CURRENT_GAME.playerId);
 }
 
 function generateJoinLink() {
-  return `<span class="join-game-link">${window.location.origin}/join/${
-    CURRENT_GAME.roomId
-  }</span>
-  <button type="button" class="copy" id="copy">
-    <i class="far fa-copy"></i>
-  </button>`;
+  return `${window.location.origin}/join/${CURRENT_GAME.roomId}`;
 }
 
 function updateOpponentMove(coordinates) {
@@ -74,6 +100,7 @@ function updateOpponentMove(coordinates) {
 function handlePlayersTurn() {
   $('.battleship-game').submit(function(event) {
     event.preventDefault();
+    $('.fire').hide();
     const selectedCoordinates = $(this)
       .find('input[name="cell"]:checked')
       .attr('id');
@@ -109,10 +136,10 @@ function displayPlayersTurns(data) {
   // generate html for displaying the grid
   let htmlString = '';
   for (let i = 0; i < 10; i++) {
-    htmlString += `<div class="row">`;
+    htmlString += `<div class="board-row">`;
     for (j = 0; j < 10; j++) {
       const disabled = grid[j][i].state === 'empty' ? '' : 'disabled';
-      htmlString += `<div class="column ${grid[j][i].state}">
+      htmlString += `<div class="board-column ${grid[j][i].state}">
       <label for="${j}${i}">
       <input type="radio" id="${j}${i}" name="cell" ${disabled} required>
       <span> </span>
@@ -121,7 +148,7 @@ function displayPlayersTurns(data) {
     htmlString += '</div>';
   }
 
-  $('.battleship-game-fieldset').append(htmlString);
+  $('.battleship-game-fieldset').html(htmlString);
 }
 
 function disableForm(formClass) {
@@ -169,11 +196,13 @@ function displayTurnResult(data, coordinates) {
 function setOpponetsTurn() {
   $('.game-state').text("Opponent's turn");
   disableForm('battleship-game');
+  $('.game').removeClass('players-turn');
 }
 
 function setPlayersTurn() {
   $('.game-state').text('Your turn');
   enableForm('battleship-game');
+  $('.game').addClass('players-turn');
 }
 
 function setGameFinished(winner) {
@@ -261,9 +290,9 @@ function displayPlayersBoard(data) {
   // generate html for displaying the grid
   let gridHtml = '';
   for (let i = 0; i < 10; i++) {
-    gridHtml += '<div class="row">';
+    gridHtml += '<div class="board-row">';
     for (let j = 0; j < 10; j++) {
-      gridHtml += `<div class="column columnwidth"><div id="board${j}${i}" class="board ${
+      gridHtml += `<div class="board-column columnwidth"><div id="board${j}${i}" class="board ${
         grid[j][i].state
       }">&nbsp;</div></div>`;
     }
@@ -274,6 +303,7 @@ function displayPlayersBoard(data) {
 }
 
 function displayGame(data) {
+  console.log('display game was called?');
   if (data === null) {
     displayErrorMessage();
   }
@@ -283,17 +313,7 @@ function displayGame(data) {
   if (data.gameFinished) {
     setGameFinished(data.winner);
   }
-}
-
-function handleCopyLink() {
-  $('.copy').on('click', function(event) {
-    var $temp = $('<input>');
-    $('body').append($temp);
-    console.log($('.join-game-link').text());
-    $temp.val($('.join-game-link').text()).select();
-    document.execCommand('copy');
-    $temp.remove();
-  });
+  $('.game').show();
 }
 
 function displayErrorMessage() {

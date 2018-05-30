@@ -1,16 +1,116 @@
 body {
-  padding: 20px;
+  padding: 0 20px;
 }
 
-.players-turns {
+.game-incomplete {
+  padding-top: 20px;
+}
+
+.navigation {
+  transition: 0.3s;
+  position: fixed;
+
+  background-color: rgba(73, 80, 87, 0.3);
+
+  display: block;
+  text-align: center;
+  height: 40px;
+  overflow: hidden;
+  /*padding: 12px 0 0;*/
+  left: 0;
+  right: 0;
+  top: 0;
+  z-index: 1000;
+}
+
+.navigation ul {
+  list-style-type: none;
+  padding: 0;
+  margin: 10px 0;
+}
+
+.navigation li {
   display: inline-block;
 }
 
-.players-board {
+main {
+  padding-top: 40px;
+}
+
+.navigation ul li a {
+  padding: 10px 15px 8px;
+  font-size: 18px;
+  font-family: 'Lato', sans-serif;
+  color: black;
+  text-decoration: none;
+}
+
+.logo {
+  position: fixed;
+  left: 10px;
+  top: -25px;
+  width: 100px;
+}
+
+.all-done-button {
+  font-family: 'Lato', sans-serif;
+  font-size: 18px;
+  padding: 16px;
+  color: rgb(1, 116, 116);
+  background-color: transparent;
+  border: solid rgb(1, 116, 116) 2px;
+  cursor: pointer;
+  margin: 5px;
+}
+
+.row p {
+  font-family: 'Lato', sans-serif;
+  line-height: 1.8;
+  font-size: 18px;
+  padding: 0;
+  margin: 0 0 0 0;
+  color: rgb(59, 59, 59);
+}
+
+.bg {
+  background-color: #dbe5e4;
+  background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='100' height='100' viewBox='0 0 100 100'%3E%3Cg fill-rule='evenodd'%3E%3Cg fill='%2392aca7' fill-opacity='0.43'%3E%3Cpath opacity='.5' d='M96 95h4v1h-4v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4h-9v4h-1v-4H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15v-9H0v-1h15V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h9V0h1v15h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9h4v1h-4v9zm-1 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm9-10v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-10 0v-9h-9v9h9zm-9-10h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9zm10 0h9v-9h-9v9z'/%3E%3Cpath d='M6 5V0H5v5H0v1h5v94h1V6h94V5H6z'/%3E%3C/g%3E%3C/g%3E%3C/svg%3E");
+}
+
+.row {
+  max-width: 1000px;
+  padding-top: 20px;
+  margin-left: auto;
+  margin-right: auto;
+  display: flex;
+  justify-content: center;
+  text-align: center;
+}
+
+.join-game-link {
+  overflow: hidden;
+  white-space: nowrap;
   display: inline-block;
-  top: -36px;
-  position: relative;
-  margin-left: 20px;
+  width: 200px;
+  text-overflow: ellipsis;
+  font-family: 'Lato', sans-serif;
+  font-size: 18px;
+  padding: 16px;
+  background-color: rgb(59, 59, 59);
+  color: white;
+  border: 0;
+  box-shadow: none;
+}
+
+.copy {
+  font-family: 'Lato', sans-serif;
+  font-size: 18px;
+  padding: 16px;
+  background-color: rgb(59, 59, 59);
+  color: white;
+  border: 0;
+  box-shadow: none;
+  cursor: pointer;
 }
 
 .hit {
@@ -108,29 +208,28 @@ fieldset {
   border: 0;
   margin: 0;
   padding: 0;
-  margin-bottom: 20px;
 }
 
 /* Clearfix */
-.row::before,
-.row::after {
+.board-row::before,
+.board-row::after {
   display: table;
   content: '';
 }
 
-.row::after {
+.board-row::after {
   clear: both;
 }
 
-.row:first-of-type .column {
+.board-row:first-of-type .board-column {
   border-top: solid black 1px;
 }
 
-.column:first-of-type {
+.board-column:first-of-type {
   border-left-width: 1px;
 }
 
-.column {
+.board-column {
   border: black solid 1px;
   border-left-width: 0;
   border-top-width: 0;
@@ -157,12 +256,11 @@ ul {
   display: none;
 }
 
-.fire {
-  position: absolute;
-  left: 50%;
-  top: 50%;
-  transform: translate(-50%, -50%);
+.players-turn .players-board {
+  filter: blur(3px);
+}
 
+.fire {
   margin: 5px;
   font-family: 'Lato', sans-serif;
   text-transform: capitalize;
@@ -173,4 +271,56 @@ ul {
   border: solid #f86029 2px;
   cursor: pointer;
   z-index: 999;
+  position: absolute;
+  top: 120%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+@media only screen and (min-width: 500px) {
+  .join-game-link {
+    width: 350px;
+  }
+}
+
+@media only screen and (min-width: 1000px) {
+  .join-game-link {
+    width: unset;
+  }
+}
+
+/******************************* RADAR **********************************/
+
+.players-turn .shadow {
+  margin: auto;
+  box-shadow: 0 0 66px 6px #a51414;
+  -webkit-animation: shadow 4s infinite ease;
+  animation: shadow 4s infinite ease;
+}
+
+.players-turn .battleship-game {
+  position: relative;
+}
+
+@-webkit-keyframes shadow {
+  0% {
+    box-shadow: 0 0 66px 6px transparent;
+  }
+  50% {
+    box-shadow: 0 0 66px 6px #a51414;
+  }
+  to {
+    box-shadow: 0 0 66px 6px transparent;
+  }
+}
+@keyframes shadow {
+  0% {
+    box-shadow: 0 0 66px 6px transparent;
+  }
+  50% {
+    box-shadow: 0 0 66px 6px #a51414;
+  }
+  to {
+    box-shadow: 0 0 66px 6px transparent;
+  }
 }
