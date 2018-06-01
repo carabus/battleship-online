@@ -22,6 +22,23 @@ function handleApp() {
   handleSelectTarget();
 }
 
+function strokeCanvas() {
+  const shipCanvas = $('.players-board').find('canvas');
+
+  shipCanvas.push($('#ship-legend').get(0));
+
+  for (let i = 0; i < shipCanvas.length; i++) {
+    const rc = rough.canvas(shipCanvas.get(i));
+    //line and rectangle
+    rc.rectangle(1, 1, 23, 23, {
+      fill: 'black',
+      roughness: 1,
+      hachureGap: 5
+      //fillWeight: 1
+    });
+  }
+}
+
 function displayIncompleteRoomMessage() {
   $('.join-game-link').text(generateJoinLink());
   $('.game-incomplete').show();
@@ -45,7 +62,7 @@ function handleAllDoneButton() {
 }
 
 function handleSelectTarget() {
-  $('input[type=radio][name=cell]').on('change', function() {
+  $('.battleship-game-fieldset').on('change', 'input[type=radio]', function() {
     $('.fire').show();
   });
 }
@@ -64,7 +81,7 @@ function initRealTimeUpdates() {
 
   socket.on('game-finished-update', function(winner) {
     console.log(winner);
-    setGameFinished(winner);
+    setGameFinished(false);
   });
 
   socket.on('joined-update', function(opponentId) {
@@ -76,13 +93,18 @@ function initRealTimeUpdates() {
   });
 }
 
-function setGameInfo(opponentId) {
-  const playersMsg = !opponentId
-    ? `Waiting for an opponent to join...`
-    : opponentId;
+function displayGameName() {
+  if (!CURRENT_GAME.opponentId) {
+    return;
+  }
+  $('.game-name row p').text(
+    `${CURRENT_GAME.opponentId} VS ${CURRENT_GAME.playerId}`
+  );
+  $('.game-name').show();
+}
 
-  $('.opponent').text(playersMsg);
-  $('.player').text(CURRENT_GAME.playerId);
+function setGameInfo(msg) {
+  $('.game-info').html(msg);
 }
 
 function generateJoinLink() {
@@ -139,7 +161,7 @@ function displayPlayersTurns(data) {
     htmlString += `<div class="board-row">`;
     for (j = 0; j < 10; j++) {
       const disabled = grid[j][i].state === 'empty' ? '' : 'disabled';
-      htmlString += `<div class="board-column ${grid[j][i].state}">
+      htmlString += `<div class="board-column columnwidth ${grid[j][i].state}">
       <label for="${j}${i}">
       <input type="radio" id="${j}${i}" name="cell" ${disabled} required>
       <span> </span>
@@ -185,7 +207,7 @@ function displayTurnResult(data, coordinates) {
 
   // check if game is finished
   if (data.finished) {
-    setGameFinished(data.winner);
+    setGameFinished(true);
     socket.emit('game-finished', {
       roomId: CURRENT_GAME.roomId,
       winner: data.winner
@@ -197,16 +219,18 @@ function setOpponetsTurn() {
   $('.game-state').text("Opponent's turn");
   disableForm('battleship-game');
   $('.game').removeClass('players-turn');
+  setGameInfo(`Opponent's turn`);
 }
 
 function setPlayersTurn() {
   $('.game-state').text('Your turn');
   enableForm('battleship-game');
   $('.game').addClass('players-turn');
+  setGameInfo('Your turn');
 }
 
-function setGameFinished(winner) {
-  $('.game-state').text(`Game is finished. The winner is ${winner}`);
+function setGameFinished(isWinner) {
+  setGameInfo(`You ${isWinner ? 'win' : 'loose'}!`);
   disableForm('battleship-game');
 }
 
@@ -236,7 +260,18 @@ function getTurnResult(coordinates, callback) {
 }
 
 function displayGameInfo(data) {
-  setGameInfo(data.opponentId);
+  if (!data.opponentId) {
+    setGameInfo(
+      'Waiting for someone to join...<a href="" target="_self">?</a>'
+    );
+    return;
+  }
+
+  if (data.gameFinished) {
+    setGameFinished(data.winner === data.playerId);
+    return;
+  }
+
   if (data.nextTurn) {
     setPlayersTurn();
   } else {
@@ -263,9 +298,6 @@ function displayPlayersBoard(data) {
       grid[ship.points[0].x][ship.points[0].y].state = 'single ship';
     } else {
       ship.points.forEach(function(point, index, points) {
-        console.log(point);
-        console.log(index);
-        console.log(points.length);
         if (index === 0 && !ship.isHorizontal) {
           grid[point.x][point.y].state = 'ship top';
         } else if (index === 0 && ship.isHorizontal) {
@@ -292,9 +324,12 @@ function displayPlayersBoard(data) {
   for (let i = 0; i < 10; i++) {
     gridHtml += '<div class="board-row">';
     for (let j = 0; j < 10; j++) {
+      let shipCanvas = grid[j][i].state.includes('ship')
+        ? `<canvas id="canvas${j}${i}" width="24" height="24"></canvas>`
+        : '';
       gridHtml += `<div class="board-column columnwidth"><div id="board${j}${i}" class="board ${
         grid[j][i].state
-      }">&nbsp;</div></div>`;
+      }">${shipCanvas}</div></div>`;
     }
     gridHtml += '</div>';
   }
@@ -303,16 +338,15 @@ function displayPlayersBoard(data) {
 }
 
 function displayGame(data) {
-  console.log('display game was called?');
   if (data === null) {
     displayErrorMessage();
   }
-  displayGameInfo(data);
+
   displayPlayersBoard(data);
   displayPlayersTurns(data);
-  if (data.gameFinished) {
-    setGameFinished(data.winner);
-  }
+  displayGameInfo(data);
+  displayGameName();
+  strokeCanvas();
   $('.game').show();
 }
 

@@ -15,14 +15,17 @@
   </script>
 
   <nav role="banner" class="navigation">
-    <!--<img class="logo" src="../images/ship.svg" alt="Battleship Online">-->
+    <a href="/" target="_self">
+      <div class="logo bg">B</div>
+    </a>
+    <div class="game-info"></div>
+    <!--
     <ul>
+      
       <li>
-        <a href="/" target="_self">
-          <i class="fas fa-home"></i>
-          Back to home page</a>
+        Your turn
       </li>
-      <!--
+      
       <li>
         <a href="/" target="_self">
           <i class="fas fa-book"></i> Battleship Game Rules</a>
@@ -30,9 +33,13 @@
       <li>
         <a href="/" target="_self">
           <i class="fas fa-question"></i> Help</a>
-      </li>-->
+      </li>
     </ul>
+    -->
   </nav>
+  <!--
+  <div class="game-events">user-name-1234 joined</div>
+-->
 
   <main role="main">
 
@@ -52,35 +59,71 @@
     </section>
 
     <section class="game not-visible">
+      <div class="game-name not-visible">
+        <div class="row">
+          <p>chivalrous-slave-7159 VS loud-lunchroom-7524</p>
+        </div>
+      </div>
+      <div class="game-boards">
+        <!--
       <div class="row">
         <p>
           <i class="fas fa-user-circle"></i>
           <span class="opponent"></span>
         </p>
       </div>
-      <div class="row">
-        <form class="battleship-game">
-          <div class="players-turns shadow">
+    -->
+        <div class="row">
+          <form class="battleship-game">
+            <div class="players-turns shadow">
 
 
 
-            <fieldset class="battleship-game-fieldset">
-              <legend></legend>
-            </fieldset>
+              <fieldset class="battleship-game-fieldset" disabled>
+                <legend></legend>
+              </fieldset>
 
 
-          </div>
-          <button type="submit" class="fire not-visible">Fire!</button>
-        </form>
-      </div>
-      <div class="row">
-        <div class="players-board"></div>
-      </div>
+            </div>
+            <button type="submit" class="fire not-visible">
+              <i class="fas fa-bomb"></i> Fire!</button>
+          </form>
+        </div>
+        <div class="row">
+          <div class="players-board"></div>
+        </div>
+        <!--
       <div class="row">
         <p>
           <i class="fas fa-user-circle"></i>
           <span class="player"></span>
         </p>
+      </div>
+    -->
+      </div>
+      <div class="row">
+        <div class="legend">
+          <div class="legend-item">
+            <div class="hit"></div>
+            <div>
+              <p>hit</p>
+            </div>
+          </div>
+          <div class="legend-item">
+            <div class="miss"></div>
+            <div>
+              <p>miss</p>
+            </div>
+          </div>
+          <div class="legend-item">
+            <div class="ship">
+              <canvas id="ship-legend" width=24 height=24></canvas>
+            </div>
+            <div>
+              <p>ship</p>
+            </div>
+          </div>
+        </div>
       </div>
     </section>
     <div class="error-message"></div>
