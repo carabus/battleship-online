@@ -32,5 +32,6 @@ function createPlayerName(callback) {
 }
 
 function displayErrorMessage() {
-  $('.error-message').text('There was an error processing your request.');
+  $('.error').text('Oops... There was an error.');
+  $('.error').show();
 }

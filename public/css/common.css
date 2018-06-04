@@ -1,0 +1,29 @@
+.not-visible {
+  display: none;
+}
+
+.error {
+  box-sizing: border-box;
+  position: fixed;
+  background-color: rgb(255, 117, 117);
+  color: black;
+  text-align: center;
+  min-height: 40px;
+  overflow: hidden;
+  left: 0;
+  right: 0;
+  top: 0;
+  z-index: 1001;
+
+  font-family: 'Lato', sans-serif;
+  font-size: 18px;
+
+  padding: 11px;
+}
+
+@media only screen and (min-width: 500px) {
+  .error {
+    min-height: 60px;
+    padding: 22px;
+  }
+}

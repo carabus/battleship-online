@@ -28,7 +28,3 @@ function joinGame(callback) {
 function displayGame(data) {
   window.location.replace(`/game/${data.id}`);
 }
-
-function displayErrorMessage() {
-  $('.error-message').text('There was an error retrieving your games');
-}

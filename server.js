@@ -41,6 +41,11 @@ app.get('/game/:id', function(req, res) {
     });
 });
 
+// all other routes display not found message
+app.use('*', (req, res) => {
+  res.render('pages/index');
+});
+
 // handle socket.io events
 io.on('connection', function(socket) {
   socket.on('join-room', function(roomId) {

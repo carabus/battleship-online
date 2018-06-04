@@ -97,9 +97,9 @@ function displayGameName() {
   if (!CURRENT_GAME.opponentId) {
     return;
   }
-  $('.game-name row p').text(
-    `${CURRENT_GAME.opponentId} VS ${CURRENT_GAME.playerId}`
-  );
+  $('.game-name')
+    .find('p')
+    .text(`${CURRENT_GAME.opponentId} VS ${CURRENT_GAME.playerId}`);
   $('.game-name').show();
 }
 
@@ -230,7 +230,9 @@ function setPlayersTurn() {
 }
 
 function setGameFinished(isWinner) {
-  setGameInfo(`You ${isWinner ? 'win' : 'loose'}!`);
+  setGameInfo('Game over');
+  $('.game-complete').find('p').text(`You ${isWinner ? 'win' : 'loose'}!`);
+  $('.game-complete').show();
   disableForm('battleship-game');
 }
 
@@ -262,7 +264,7 @@ function getTurnResult(coordinates, callback) {
 function displayGameInfo(data) {
   if (!data.opponentId) {
     setGameInfo(
-      'Waiting for someone to join...<a href="" target="_self">?</a>'
+      'Waiting for someone to join...<a href="" target="_self"><i class="fas fa-question-circle"></i></a>'
     );
     return;
   }
@@ -348,8 +350,4 @@ function displayGame(data) {
   displayGameName();
   strokeCanvas();
   $('.game').show();
-}
-
-function displayErrorMessage() {
-  $('.error-message').text('There was an error retrieving your game');
 }

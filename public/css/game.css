@@ -1,7 +1,3 @@
-body {
-  padding: 0 20px;
-}
-
 .game-incomplete {
   padding-top: 20px;
 }
@@ -100,7 +96,7 @@ main {
   font-family: 'Lato', sans-serif;
   line-height: 1.8;
   font-size: 18px;
-  padding: 0;
+  padding: 0 20px;
   margin: 0 0 0 0;
   color: rgb(59, 59, 59);
 }
@@ -349,6 +345,26 @@ ul {
   color: #1c45fa;
 }
 
+.game-complete {
+  border-bottom-left-radius: 50% 40%;
+  border-bottom-right-radius: 50% 20%;
+}
+
+.game-complete p {
+  font-family: 'Fredericka the Great', sans-serif;
+  text-transform: capitalize;
+  font-size: 70px;
+  color: rgb(59, 59, 59);
+}
+
+@media only screen and (max-width: 400px) {
+  .game-info {
+    font-size: 14px;
+
+    padding: 13px 0 13px 15px;
+  }
+}
+
 @media only screen and (min-width: 500px) {
   .join-game-link {
     width: 350px;
@@ -378,6 +394,11 @@ ul {
 }
 
 @media only screen and (min-width: 700px) {
+  .game-complete {
+    border-bottom-left-radius: 50% 10%;
+    border-bottom-right-radius: 50% 5%;
+  }
+
   .game-boards {
     display: flex;
     justify-content: center;
@@ -392,6 +413,11 @@ ul {
 @media only screen and (min-width: 1000px) {
   .join-game-link {
     width: unset;
+  }
+
+  .game-complete {
+    border-bottom-left-radius: 50% 20%;
+    border-bottom-right-radius: 50% 10%;
   }
 }
 
@@ -416,6 +442,7 @@ ul {
   margin-right: 4px;
 }
 
+.game-complete.shadow,
 .players-turn .shadow {
   box-shadow: 0 0 0 99999px rgba(0, 0, 0, 0.5);
   position: relative;
