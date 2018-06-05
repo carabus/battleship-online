@@ -19,36 +19,16 @@
       <div class="logo bg">B</div>
     </a>
     <div class="game-info"></div>
-    <!--
-    <ul>
-      
-      <li>
-        Your turn
-      </li>
-      
-      <li>
-        <a href="/" target="_self">
-          <i class="fas fa-book"></i> Battleship Game Rules</a>
-      </li>
-      <li>
-        <a href="/" target="_self">
-          <i class="fas fa-question"></i> Help</a>
-      </li>
-    </ul>
-    -->
   </nav>
-  <!--
-  <div class="game-events">user-name-1234 joined</div>
--->
 
   <main role="main">
 
-    <section class="game-complete not-visible shadow">
+    <section class="game-complete convex not-visible shadow">
       <div class="row">
-        <p>You win</p>
+        <p></p>
       </div>
       <div class="row">
-        <button type="button" class="all-done-button">Play Again</button>
+        <button type="button" class="play-again primary-button">Play Again</button>
       </div>
     </section>
 
@@ -56,61 +36,40 @@
       <div class="row">
         <p>Almost ready to battle. Send this link to a friend so that they can join.</p>
       </div>
-      <div class="row">
+      <div class="row flex-row">
         <span class="join-game-link"></span>
         <button type="button" class="copy">
           <i class="far fa-copy"></i>
         </button>
       </div>
       <div class="row">
-        <button type="button" class="all-done-button">Got it</button>
+        <button type="button" class="acknowledge-button secondary-button">Got it</button>
       </div>
     </section>
 
     <section class="game not-visible">
       <div class="game-name not-visible">
-        <div class="row">
+        <div class="row flex-row">
           <p></p>
         </div>
       </div>
       <div class="game-boards">
-        <!--
-      <div class="row">
-        <p>
-          <i class="fas fa-user-circle"></i>
-          <span class="opponent"></span>
-        </p>
-      </div>
-    -->
-        <div class="row">
+        <div class="row flex-row">
           <form class="battleship-game">
             <div class="players-turns shadow">
-
-
-
               <fieldset class="battleship-game-fieldset" disabled>
                 <legend></legend>
               </fieldset>
-
-
             </div>
-            <button type="submit" class="fire not-visible">
+            <button type="submit" class="fire primary-button not-visible">
               <i class="fas fa-bomb"></i> Fire!</button>
           </form>
         </div>
-        <div class="row">
+        <div class="row flex-row">
           <div class="players-board"></div>
         </div>
-        <!--
-      <div class="row">
-        <p>
-          <i class="fas fa-user-circle"></i>
-          <span class="player"></span>
-        </p>
       </div>
-    -->
-      </div>
-      <div class="row">
+      <div class="row flex-row">
         <div class="legend">
           <div class="legend-item">
             <div class="hit"></div>

@@ -7,7 +7,7 @@ function handleApp() {
   initRealTimeUpdates();
 
   if (CURRENT_GAME.opponentId) {
-    displayGame(CURRENT_GAME);
+    displayGame();
     socket.emit('joined', {
       roomId: CURRENT_GAME.roomId,
       playerId: CURRENT_GAME.playerId
@@ -16,57 +16,16 @@ function handleApp() {
     displayIncompleteRoomMessage();
   }
 
-  handleAllDoneButton();
-  handlePlayersTurn();
   handleCopyLink();
+  handleAcknowledgeButton();
+
   handleSelectTarget();
+  handlePlayersTurn();
+
+  handlePlayAgainButton();
 }
 
-function strokeCanvas() {
-  const shipCanvas = $('.players-board').find('canvas');
-
-  shipCanvas.push($('#ship-legend').get(0));
-
-  for (let i = 0; i < shipCanvas.length; i++) {
-    const rc = rough.canvas(shipCanvas.get(i));
-    //line and rectangle
-    rc.rectangle(1, 1, 23, 23, {
-      fill: 'black',
-      roughness: 1,
-      hachureGap: 5
-      //fillWeight: 1
-    });
-  }
-}
-
-function displayIncompleteRoomMessage() {
-  $('.join-game-link').text(generateJoinLink());
-  $('.game-incomplete').show();
-}
-
-function handleCopyLink() {
-  $('.copy').on('click', function(event) {
-    var $temp = $('<input>');
-    $('body').append($temp);
-    $temp.val($('.join-game-link').text()).select();
-    document.execCommand('copy');
-    $temp.remove();
-  });
-}
-
-function handleAllDoneButton() {
-  $('.all-done-button').on('click', function(event) {
-    $('.game-incomplete').hide();
-    displayGame(CURRENT_GAME);
-  });
-}
-
-function handleSelectTarget() {
-  $('.battleship-game-fieldset').on('change', 'input[type=radio]', function() {
-    $('.fire').show();
-  });
-}
-
+/** Init socket.io and handle game status updates sent via socket */
 function initRealTimeUpdates() {
   socket = io();
   socket.emit('join-room', CURRENT_GAME.roomId);
@@ -90,6 +49,76 @@ function initRealTimeUpdates() {
       CURRENT_GAME.opponentId = opponentId;
       displayGame(CURRENT_GAME);
     }
+  });
+}
+
+/** Display all game related UI elements: status, players, boards, legend */
+function displayGame() {
+  if (CURRENT_GAME === null) {
+    displayErrorMessage();
+  }
+
+  displayPlayersBoard();
+  displayPlayersTurns();
+  displayGameInfo();
+  displayGameName();
+
+  $('.game').show();
+}
+
+/** If player is first to join the game, display instructions how other player can join */
+function displayIncompleteRoomMessage() {
+  $('.join-game-link').text(generateJoinLink());
+  $('.game-incomplete').show();
+}
+
+/** Copy url to be used to join the game */
+function handleCopyLink() {
+  $('.copy').on('click', function(event) {
+    var $temp = $('<input id="temp">');
+    $temp.val($('.join-game-link').text());
+    $('body').append($temp);
+
+    if (navigator.userAgent.match('/ipad|ipod|iphone/i')) {
+      var el = $('#temp').get(0);
+      var editable = el.contentEditable;
+      var readOnly = el.readOnly;
+      el.contentEditable = true;
+      el.readOnly = true;
+      var range = document.createRange();
+      range.selectNodeContents(el);
+      var sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(range);
+      el.setSelectionRange(0, 999999);
+      el.contentEditable = editable;
+      el.readOnly = readOnly;
+    } else {
+      $temp.select();
+    }
+    document.execCommand('copy');
+    $temp.remove();
+  });
+}
+
+/** Handle button press in game incomplete section */
+function handleAcknowledgeButton() {
+  $('.acknowledge-button').on('click', function(event) {
+    $('.game-incomplete').hide();
+    displayGame(CURRENT_GAME);
+  });
+}
+
+function handlePlayAgainButton() {
+  $('.play-again').on('click', function(event) {
+    createAndJoinGame();
+  });
+}
+
+/** Show button to submit players turn, when target point is selected */
+function handleSelectTarget() {
+  $('.battleship-game-fieldset').on('change', 'input[type=radio]', function() {
+    $('.fire').show();
   });
 }
 
@@ -135,7 +164,7 @@ function handlePlayersTurn() {
   });
 }
 
-function displayPlayersTurns(data) {
+function displayPlayersTurns() {
   // generate empty 10 by 10 grid
   let grid = [];
   for (let i = 0; i < 10; i++) {
@@ -147,11 +176,11 @@ function displayPlayersTurns(data) {
     }
   }
   // update with information on hits and misses
-  data.hits.forEach(point => {
+  CURRENT_GAME.hits.forEach(point => {
     grid[point.x][point.y].state = 'hit';
   });
 
-  data.misses.forEach(point => {
+  CURRENT_GAME.misses.forEach(point => {
     grid[point.x][point.y].state = 'miss';
   });
 
@@ -216,24 +245,28 @@ function displayTurnResult(data, coordinates) {
 }
 
 function setOpponetsTurn() {
-  $('.game-state').text("Opponent's turn");
   disableForm('battleship-game');
   $('.game').removeClass('players-turn');
   setGameInfo(`Opponent's turn`);
+  $('.navigation').removeClass('active');
 }
 
 function setPlayersTurn() {
-  $('.game-state').text('Your turn');
   enableForm('battleship-game');
   $('.game').addClass('players-turn');
   setGameInfo('Your turn');
+  $('.navigation').addClass('active');
 }
 
 function setGameFinished(isWinner) {
   setGameInfo('Game over');
-  $('.game-complete').find('p').text(`You ${isWinner ? 'win' : 'loose'}!`);
+  $('.game').removeClass('players-turn');
+  $('.game-complete')
+    .find('p')
+    .text(`You ${isWinner ? 'win' : 'loose'}!`);
   $('.game-complete').show();
   disableForm('battleship-game');
+  $('.navigation').addClass('active');
 }
 
 function getTurnResult(coordinates, callback) {
@@ -257,31 +290,31 @@ function getTurnResult(coordinates, callback) {
     error: displayErrorMessage
   };
 
-  console.log(settings);
   $.ajax(settings);
 }
 
-function displayGameInfo(data) {
-  if (!data.opponentId) {
+function displayGameInfo() {
+  if (!CURRENT_GAME.opponentId) {
     setGameInfo(
       'Waiting for someone to join...<a href="" target="_self"><i class="fas fa-question-circle"></i></a>'
     );
     return;
   }
 
-  if (data.gameFinished) {
-    setGameFinished(data.winner === data.playerId);
+  if (CURRENT_GAME.gameFinished) {
+    setGameFinished(CURRENT_GAME.winner === CURRENT_GAME.playerId);
     return;
   }
 
-  if (data.nextTurn) {
+  if (CURRENT_GAME.nextTurn) {
     setPlayersTurn();
   } else {
     setOpponetsTurn();
   }
 }
 
-function displayPlayersBoard(data) {
+/** Display players ships */
+function displayPlayersBoard() {
   //generate 10 by 10 array
   let grid = [];
   for (let i = 0; i < 10; i++) {
@@ -294,29 +327,12 @@ function displayPlayersBoard(data) {
   }
 
   // add ships
-  const ships = data.ships;
-  ships.forEach(ship => {
-    if (ship.points.length === 1) {
-      grid[ship.points[0].x][ship.points[0].y].state = 'single ship';
-    } else {
-      ship.points.forEach(function(point, index, points) {
-        if (index === 0 && !ship.isHorizontal) {
-          grid[point.x][point.y].state = 'ship top';
-        } else if (index === 0 && ship.isHorizontal) {
-          grid[point.x][point.y].state = 'ship left';
-        } else if (index === points.length - 1 && !ship.isHorizontal) {
-          grid[point.x][point.y].state = 'ship bottom';
-        } else if (index === points.length - 1 && ship.isHorizontal) {
-          grid[point.x][point.y].state = 'ship right';
-        } else {
-          grid[point.x][point.y].state = 'ship';
-        }
-      });
-    }
+  CURRENT_GAME.ships.forEach(ship => {
+    ship.points.forEach(point => (grid[point.x][point.y].state = 'ship'));
   });
 
   // display opponents moves
-  const opponentsMoves = data.opponentMoves;
+  const opponentsMoves = CURRENT_GAME.opponentMoves;
   opponentsMoves.forEach(point => {
     grid[point.x][point.y].state += ' shot';
   });
@@ -337,17 +353,21 @@ function displayPlayersBoard(data) {
   }
 
   $('.players-board').html(gridHtml);
+  strokeCanvas();
 }
 
-function displayGame(data) {
-  if (data === null) {
-    displayErrorMessage();
-  }
+/** Stroke player's ships on the board with rough js */
+function strokeCanvas() {
+  const shipCanvas = $('.players-board').find('canvas');
 
-  displayPlayersBoard(data);
-  displayPlayersTurns(data);
-  displayGameInfo(data);
-  displayGameName();
-  strokeCanvas();
-  $('.game').show();
+  shipCanvas.push($('#ship-legend').get(0));
+
+  for (let i = 0; i < shipCanvas.length; i++) {
+    const rc = rough.canvas(shipCanvas.get(i));
+    rc.rectangle(1, 1, 23, 23, {
+      fill: 'black',
+      roughness: 1,
+      hachureGap: 5
+    });
+  }
 }

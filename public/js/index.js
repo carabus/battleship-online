@@ -14,8 +14,7 @@ function displayPage(playerId) {
 
 function handleNewGame() {
   $('.new-battle').on('click', function(event) {
-    const roomId = Date.now();
-    window.location.replace(`/join/${roomId}`);
+    createAndJoinGame();
   });
 }
 

@@ -35,3 +35,8 @@ function displayErrorMessage() {
   $('.error').text('Oops... There was an error.');
   $('.error').show();
 }
+
+function createAndJoinGame() {
+  const roomId = Date.now();
+  window.location.replace(`/join/${roomId}`);
+}
