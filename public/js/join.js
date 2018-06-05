@@ -2,6 +2,7 @@ $(getOrCreatePlayer);
 
 function handleApp() {
   joinGame(displayGame);
+  handleDismissErrorMessage();
 }
 
 function joinGame(callback) {

@@ -5,6 +5,7 @@ function handleApp() {
   handleNewGame();
   handlePlayerUpdate();
   handleHelp();
+  handleDismissErrorMessage();
 }
 
 function displayPage(playerId) {

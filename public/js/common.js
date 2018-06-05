@@ -32,8 +32,16 @@ function createPlayerName(callback) {
 }
 
 function displayErrorMessage() {
-  $('.error').text('Oops... There was an error.');
+  $('.error')
+    .find('p')
+    .text('Oops... There was an error.');
   $('.error').show();
+}
+
+function handleDismissErrorMessage() {
+  $('.dismiss-error-message').on('click', function(event) {
+    $('.error').hide();
+  });
 }
 
 function createAndJoinGame() {

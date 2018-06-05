@@ -23,6 +23,7 @@ function handleApp() {
   handlePlayersTurn();
 
   handlePlayAgainButton();
+  handleDismissErrorMessage();
 }
 
 /** Init socket.io and handle game status updates sent via socket */
@@ -98,6 +99,7 @@ function handleCopyLink() {
     }
     document.execCommand('copy');
     $temp.remove();
+    $('.copy').attr('title', 'Copied');
   });
 }
 
@@ -128,7 +130,7 @@ function displayGameName() {
   }
   $('.game-name')
     .find('p')
-    .text(`${CURRENT_GAME.opponentId} VS ${CURRENT_GAME.playerId}`);
+    .text(`${CURRENT_GAME.playerId} VS ${CURRENT_GAME.opponentId}`);
   $('.game-name').show();
 }
 
