@@ -1,6 +1,10 @@
 function setPlayerAndHandleApp(playerId) {
-  window.localStorage.setItem('playerId', playerId);
+  setPlayer(playerId);
   handleApp();
+}
+
+function setPlayer(playerId) {
+  window.localStorage.setItem('playerId', playerId);
 }
 
 function getOrCreatePlayer() {
@@ -28,5 +32,19 @@ function createPlayerName(callback) {
 }
 
 function displayErrorMessage() {
-  $('.error-message').text('There was an error processing your request.');
+  $('.error')
+    .find('p')
+    .text('Oops... There was an error.');
+  $('.error').show();
+}
+
+function handleDismissErrorMessage() {
+  $('.dismiss-error-message').on('click', function(event) {
+    $('.error').hide();
+  });
+}
+
+function createAndJoinGame() {
+  const roomId = Date.now();
+  window.location.replace(`/join/${roomId}`);
 }

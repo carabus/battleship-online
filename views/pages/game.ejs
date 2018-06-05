@@ -9,40 +9,92 @@
     <script src="../js/game.js"></script>
 </head>
 
-<body>
+<body class="bg">
   <script>
     let CURRENT_GAME = '<%- JSON.stringify(game) %>';
   </script>
-  <nav role="banner">
-    <ul>
-      <li>
-        <a href="/" target="_self">Return to Dashboard</a>
-      </li>
-      <li>
-        <a href="/" target="_self">Help</a>
-      </li>
-    </ul>
+
+  <nav role="banner" class="navigation">
+    <a href="/" target="_self" title="Go to home page">
+      <div class="logo bg">B</div>
+    </a>
+    <div class="game-info"></div>
   </nav>
-  <header role="banner">
-    <h1>Battleship online</h1>
-  </header>
+
   <main role="main">
-    <section class="game-info">
-      <p class="game-name"></p>
-      <p class="game-state"></p>
-    </section>
-    <section class="game">
-      <div class="players-turns">
-        <form class="battleship-game">
-          <fieldset class="battleship-game-fieldset">
-            <legend></legend>
-          </fieldset>
-          <button type="submit">Fire!</button>
-        </form>
+
+    <section class="game-complete convex not-visible shadow">
+      <div class="row">
+        <p></p>
       </div>
-      <div class="players-board"></div>
+      <div class="row">
+        <button type="button" class="play-again primary-button">Play Again</button>
+      </div>
     </section>
-    <div class="error-message"></div>
+
+    <section class="game-incomplete not-visible">
+      <div class="row">
+        <p>Almost ready to battle. Send this link to a friend so that they can join.</p>
+      </div>
+      <div class="row flex-row">
+        <span class="join-game-link"></span>
+        <button type="button" class="copy" title="Copy">
+          <i class="far fa-copy"></i>
+        </button>
+      </div>
+      <div class="row">
+        <button type="button" class="acknowledge-button secondary-button">Got it</button>
+      </div>
+    </section>
+
+    <section class="game not-visible">
+      <div class="game-name not-visible">
+        <div class="row flex-row">
+          <p></p>
+        </div>
+      </div>
+      <div class="game-boards">
+        <div class="row flex-row">
+          <form class="battleship-game">
+            <div class="players-turns shadow">
+              <fieldset class="battleship-game-fieldset" disabled>
+                <legend></legend>
+              </fieldset>
+            </div>
+            <button type="submit" class="fire primary-button not-visible">
+              <i class="fas fa-bomb"></i> Fire!</button>
+          </form>
+        </div>
+        <div class="row flex-row">
+          <div class="players-board"></div>
+        </div>
+      </div>
+      <div class="row flex-row">
+        <div class="legend">
+          <div class="legend-item">
+            <div class="hit"></div>
+            <div>
+              <p>hit</p>
+            </div>
+          </div>
+          <div class="legend-item">
+            <div class="miss"></div>
+            <div>
+              <p>miss</p>
+            </div>
+          </div>
+          <div class="legend-item">
+            <div class="ship">
+              <canvas id="ship-legend" width=24 height=24></canvas>
+            </div>
+            <div>
+              <p>ship</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+    <% include ../partials/error %>
   </main>
 </body>
 

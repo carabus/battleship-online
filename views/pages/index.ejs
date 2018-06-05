@@ -10,26 +10,33 @@
 </head>
 
 <body>
-  <header role="banner">
-    <h1>Battleship online</h1>
+  <header role="banner" class="bg convex">
+
+    <div class="row">
+      <img class="ship" src="../images/ship.svg">
+    </div>
+    <div class="row">
+      <h1>Battleship Online</h1>
+    </div>
+
+    <div class="row">
+      <p class="intro">A casual game of Battleship to play with a friend.</p>
+      <p class="intro">No registration, pen or paper is required ;)</p>
+    </div>
+
+    <div class="row not-visible new-game-section">
+      <p class="hello">Hello, </p>
+      <button type="button" class="player secondary-button" data-intro="We've created this user name for you. If you don't like it, press the button and we'll try again."
+        data-position="top">
+      </button>
+      <button type="button" class="new-battle primary-button" data-intro="Jump straight into the game." data-position="bottom">
+        <i class="fas fa-bomb"></i> Start Battle!</button>
+      <p>
+        <a class="whats-this" href="javascript:void(0)">I need some help</a>
+      </p>
+    </div>
   </header>
-  <main role="main">
-    <section class="player-info">
-
-    </section>
-
-    <section class="new-game-section" class="not-visible">
-      <button type="button" class="new-battle">
-        <i class="fas fa-bomb"></i> New Battle!</button>
-      <span class="link not-visible">
-        <a class="join-game-link"></a>
-        <button type="button" class="copy" id="copy">
-          <i class="far fa-copy"></i>
-        </button>
-      </span>
-    </section>
-    <div class="error-message"></div>
-  </main>
+  <% include ../partials/error %>
 </body>
 
 </html>

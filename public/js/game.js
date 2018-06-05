@@ -5,16 +5,28 @@ $(handleApp);
 function handleApp() {
   CURRENT_GAME = JSON.parse(CURRENT_GAME);
   initRealTimeUpdates();
-  displayGame(CURRENT_GAME);
+
   if (CURRENT_GAME.opponentId) {
+    displayGame();
     socket.emit('joined', {
       roomId: CURRENT_GAME.roomId,
       playerId: CURRENT_GAME.playerId
     });
+  } else {
+    displayIncompleteRoomMessage();
   }
+
+  handleCopyLink();
+  handleAcknowledgeButton();
+
+  handleSelectTarget();
   handlePlayersTurn();
+
+  handlePlayAgainButton();
+  handleDismissErrorMessage();
 }
 
+/** Init socket.io and handle game status updates sent via socket */
 function initRealTimeUpdates() {
   socket = io();
   socket.emit('join-room', CURRENT_GAME.roomId);
@@ -29,21 +41,105 @@ function initRealTimeUpdates() {
 
   socket.on('game-finished-update', function(winner) {
     console.log(winner);
-    setGameFinished(winner);
+    setGameFinished(false);
   });
 
   socket.on('joined-update', function(opponentId) {
-    console.log(opponentId);
-    setGameInfo(opponentId);
+    $('.game-incomplete').hide();
+    if (!CURRENT_GAME.opponentId) {
+      CURRENT_GAME.opponentId = opponentId;
+      displayGame(CURRENT_GAME);
+    }
   });
 }
 
-function setGameInfo(opponentId) {
-  const playersMsg = !opponentId
-    ? 'waiting for an opponent to join the game...'
-    : `${CURRENT_GAME.playerId} VS ${opponentId}`;
+/** Display all game related UI elements: status, players, boards, legend */
+function displayGame() {
+  if (CURRENT_GAME === null) {
+    displayErrorMessage();
+  }
 
-  $('.game-name').text(playersMsg);
+  displayPlayersBoard();
+  displayPlayersTurns();
+  displayGameInfo();
+  displayGameName();
+
+  $('.game').show();
+}
+
+/** If player is first to join the game, display instructions how other player can join */
+function displayIncompleteRoomMessage() {
+  $('.join-game-link').text(generateJoinLink());
+  $('.game-incomplete').show();
+}
+
+/** Copy url to be used to join the game */
+function handleCopyLink() {
+  $('.copy').on('click', function(event) {
+    var $temp = $('<input id="temp">');
+    $temp.val($('.join-game-link').text());
+    $('body').append($temp);
+
+    if (navigator.userAgent.match('/ipad|ipod|iphone/i')) {
+      var el = $('#temp').get(0);
+      var editable = el.contentEditable;
+      var readOnly = el.readOnly;
+      el.contentEditable = true;
+      el.readOnly = true;
+      var range = document.createRange();
+      range.selectNodeContents(el);
+      var sel = window.getSelection();
+      sel.removeAllRanges();
+      sel.addRange(range);
+      el.setSelectionRange(0, 999999);
+      el.contentEditable = editable;
+      el.readOnly = readOnly;
+    } else {
+      $temp.select();
+    }
+    document.execCommand('copy');
+    $temp.remove();
+    $('.copy').attr('title', 'Copied');
+  });
+}
+
+/** Handle button press in game incomplete section */
+function handleAcknowledgeButton() {
+  $('.acknowledge-button').on('click', function(event) {
+    $('.game-incomplete').hide();
+    displayGame(CURRENT_GAME);
+  });
+}
+
+function handlePlayAgainButton() {
+  $('.play-again').on('click', function(event) {
+    createAndJoinGame();
+  });
+}
+
+/** Show button to submit players turn, when target point is selected */
+function handleSelectTarget() {
+  $('.battleship-game-fieldset').on('change', 'input[type=radio]', function() {
+    $('.fire').show();
+  });
+}
+
+function displayGameName() {
+  if (!CURRENT_GAME.opponentId) {
+    return;
+  }
+  $('.game-name')
+    .find('p')
+    .text(`${CURRENT_GAME.playerId} VS ${CURRENT_GAME.opponentId}`);
+  $('.game-name').show();
+}
+
+function setGameInfo(msg) {
+  $('.game-info').html(msg);
+}
+
+function generateJoinLink() {
+  return `${window.location.origin}/join/${CURRENT_GAME.roomId}`;
 }
 
 function updateOpponentMove(coordinates) {
@@ -57,6 +153,7 @@ function updateOpponentMove(coordinates) {
 function handlePlayersTurn() {
   $('.battleship-game').submit(function(event) {
     event.preventDefault();
+    $('.fire').hide();
     const selectedCoordinates = $(this)
       .find('input[name="cell"]:checked')
       .attr('id');
@@ -69,7 +166,7 @@ function handlePlayersTurn() {
   });
 }
 
-function displayPlayersTurns(data) {
+function displayPlayersTurns() {
   // generate empty 10 by 10 grid
   let grid = [];
   for (let i = 0; i < 10; i++) {
@@ -81,21 +178,21 @@ function displayPlayersTurns(data) {
     }
   }
   // update with information on hits and misses
-  data.hits.forEach(point => {
+  CURRENT_GAME.hits.forEach(point => {
     grid[point.x][point.y].state = 'hit';
   });
 
-  data.misses.forEach(point => {
+  CURRENT_GAME.misses.forEach(point => {
     grid[point.x][point.y].state = 'miss';
   });
 
   // generate html for displaying the grid
   let htmlString = '';
   for (let i = 0; i < 10; i++) {
-    htmlString += `<div class="row">`;
+    htmlString += `<div class="board-row">`;
     for (j = 0; j < 10; j++) {
       const disabled = grid[j][i].state === 'empty' ? '' : 'disabled';
-      htmlString += `<div class="column ${grid[j][i].state}">
+      htmlString += `<div class="board-column columnwidth ${grid[j][i].state}">
       <label for="${j}${i}">
       <input type="radio" id="${j}${i}" name="cell" ${disabled} required>
       <span> </span>
@@ -104,7 +201,7 @@ function displayPlayersTurns(data) {
     htmlString += '</div>';
   }
 
-  $('.battleship-game-fieldset').append(htmlString);
+  $('.battleship-game-fieldset').html(htmlString);
 }
 
 function disableForm(formClass) {
@@ -141,7 +238,7 @@ function displayTurnResult(data, coordinates) {
 
   // check if game is finished
   if (data.finished) {
-    setGameFinished(data.winner);
+    setGameFinished(true);
     socket.emit('game-finished', {
       roomId: CURRENT_GAME.roomId,
       winner: data.winner
@@ -150,18 +247,28 @@ function displayTurnResult(data, coordinates) {
 }
 
 function setOpponetsTurn() {
-  $('.game-state').text("Opponent's turn");
   disableForm('battleship-game');
+  $('.game').removeClass('players-turn');
+  setGameInfo(`Opponent's turn`);
+  $('.navigation').removeClass('active');
 }
 
 function setPlayersTurn() {
-  $('.game-state').text('Your turn');
   enableForm('battleship-game');
+  $('.game').addClass('players-turn');
+  setGameInfo('Your turn');
+  $('.navigation').addClass('active');
 }
 
-function setGameFinished(winner) {
-  $('.game-state').text(`Game is finished. The winner is ${winner}`);
+function setGameFinished(isWinner) {
+  setGameInfo('Game over');
+  $('.game').removeClass('players-turn');
+  $('.game-complete')
+    .find('p')
+    .text(`You ${isWinner ? 'win' : 'loose'}!`);
+  $('.game-complete').show();
   disableForm('battleship-game');
+  $('.navigation').addClass('active');
 }
 
 function getTurnResult(coordinates, callback) {
@@ -185,20 +292,31 @@ function getTurnResult(coordinates, callback) {
     error: displayErrorMessage
   };
 
-  console.log(settings);
   $.ajax(settings);
 }
 
-function displayGameInfo(data) {
-  setGameInfo(data.opponentId);
-  if (data.nextTurn) {
+function displayGameInfo() {
+  if (!CURRENT_GAME.opponentId) {
+    setGameInfo(
+      'Waiting for someone to join...<a href="" target="_self"><i class="fas fa-question-circle"></i></a>'
+    );
+    return;
+  }
+
+  if (CURRENT_GAME.gameFinished) {
+    setGameFinished(CURRENT_GAME.winner === CURRENT_GAME.playerId);
+    return;
+  }
+
+  if (CURRENT_GAME.nextTurn) {
     setPlayersTurn();
   } else {
     setOpponetsTurn();
   }
 }
 
-function displayPlayersBoard(data) {
+/** Display players ships */
+function displayPlayersBoard() {
   //generate 10 by 10 array
   let grid = [];
   for (let i = 0; i < 10; i++) {
@@ -211,32 +329,12 @@ function displayPlayersBoard(data) {
   }
 
   // add ships
-  const ships = data.ships;
-  ships.forEach(ship => {
-    if (ship.points.length === 1) {
-      grid[ship.points[0].x][ship.points[0].y].state = 'single ship';
-    } else {
-      ship.points.forEach(function(point, index, points) {
-        console.log(point);
-        console.log(index);
-        console.log(points.length);
-        if (index === 0 && !ship.isHorizontal) {
-          grid[point.x][point.y].state = 'ship top';
-        } else if (index === 0 && ship.isHorizontal) {
-          grid[point.x][point.y].state = 'ship left';
-        } else if (index === points.length - 1 && !ship.isHorizontal) {
-          grid[point.x][point.y].state = 'ship bottom';
-        } else if (index === points.length - 1 && ship.isHorizontal) {
-          grid[point.x][point.y].state = 'ship right';
-        } else {
-          grid[point.x][point.y].state = 'ship';
-        }
-      });
-    }
+  CURRENT_GAME.ships.forEach(ship => {
+    ship.points.forEach(point => (grid[point.x][point.y].state = 'ship'));
   });
 
   // display opponents moves
-  const opponentsMoves = data.opponentMoves;
+  const opponentsMoves = CURRENT_GAME.opponentMoves;
   opponentsMoves.forEach(point => {
     grid[point.x][point.y].state += ' shot';
   });
@@ -244,30 +342,34 @@ function displayPlayersBoard(data) {
   // generate html for displaying the grid
   let gridHtml = '';
   for (let i = 0; i < 10; i++) {
-    gridHtml += '<div class="row">';
+    gridHtml += '<div class="board-row">';
     for (let j = 0; j < 10; j++) {
-      gridHtml += `<div class="column columnwidth"><div id="board${j}${i}" class="board ${
+      let shipCanvas = grid[j][i].state.includes('ship')
+        ? `<canvas id="canvas${j}${i}" width="24" height="24"></canvas>`
+        : '';
+      gridHtml += `<div class="board-column columnwidth"><div id="board${j}${i}" class="board ${
         grid[j][i].state
-      }">&nbsp;</div></div>`;
+      }">${shipCanvas}</div></div>`;
     }
     gridHtml += '</div>';
   }
 
   $('.players-board').html(gridHtml);
+  strokeCanvas();
 }
 
-function displayGame(data) {
-  if (data === null) {
-    displayErrorMessage();
-  }
-  displayGameInfo(data);
-  displayPlayersBoard(data);
-  displayPlayersTurns(data);
-  if (data.gameFinished) {
-    setGameFinished(data.winner);
-  }
-}
+/** Stroke player's ships on the board with rough js */
+function strokeCanvas() {
+  const shipCanvas = $('.players-board').find('canvas');
 
-function displayErrorMessage() {
-  $('.error-message').text('There was an error retrieving your game');
+  shipCanvas.push($('#ship-legend').get(0));
+
+  for (let i = 0; i < shipCanvas.length; i++) {
+    const rc = rough.canvas(shipCanvas.get(i));
+    rc.rectangle(1, 1, 23, 23, {
+      fill: 'black',
+      roughness: 1,
+      hachureGap: 5
+    });
+  }
 }

@@ -1,12 +1,49 @@
-.not-visible {
-  display: none;
-}
-
 body {
-  padding: 20px;
+  background-color: #008b8b;
 }
 
-.join-game-link-input {
-  width: 270px;
-  border: none;
+header {
+  padding-top: 20px;
+  padding-bottom: 50px;
+}
+
+h1 {
+  font-family: 'Fredericka the Great', sans-serif;
+  text-transform: capitalize;
+  font-size: 70px;
+  margin-top: 0;
+  margin-bottom: 30px;
+  font-weight: normal;
+}
+
+.hello {
+  display: inline-block;
+}
+
+.ship {
+  width: 200px;
+}
+
+.chardinjs-tooltiptext {
+  font-family: 'Lato', sans-serif;
+  font-size: 15px;
+}
+
+@media only screen and (max-width: 640px) {
+  h1 {
+    font-size: 50px;
+    margin-bottom: 20px;
+  }
+
+  .ship {
+    width: 150px;
+  }
+
+  header {
+    padding-top: 0;
+  }
+
+  .intro {
+    display: inline;
+  }
 }
