@@ -3,9 +3,15 @@ let socket;
 $(handleApp);
 
 function handleApp() {
+  // We get all current game details from backend in ejs template variable
   CURRENT_GAME = JSON.parse(CURRENT_GAME);
+
+  // init socket.io and handle socket.io events
   initRealTimeUpdates();
 
+  // opponentId only available when someone has joined the game
+  // if both players present, we display a game ready to play
+  // if no one has joined, we display instructions how to invite other player
   if (CURRENT_GAME.opponentId) {
     displayGame();
     displayPlayers();
@@ -27,7 +33,7 @@ function handleApp() {
   handleDismissErrorMessage();
 }
 
-/** Init socket.io and handle game status updates sent via socket */
+/** Init socket.io and handle socket.io events */
 function initRealTimeUpdates() {
   socket = io();
   socket.emit('join-room', CURRENT_GAME.roomId);
@@ -55,6 +61,9 @@ function initRealTimeUpdates() {
   });
 }
 
+/**
+ * Display animation that shows players in the game at the beginning of the game, e.g. "player1 vs player2"
+ */
 function displayPlayers() {
   if (!CURRENT_GAME.opponentId) {
     return;
@@ -86,7 +95,6 @@ function displayGame() {
   displayPlayersBoard();
   displayPlayersTurns();
   displayGameInfo();
-  displayGameName();
 
   $('.game').show();
 }
@@ -104,6 +112,7 @@ function handleCopyLink() {
     $temp.val($('.join-game-link').text());
     $('body').append($temp);
 
+    // This is required to workaround security features in iOS
     if (navigator.userAgent.match('/ipad|ipod|iphone/i')) {
       var el = $('#temp').get(0);
       var editable = el.contentEditable;
@@ -127,7 +136,6 @@ function handleCopyLink() {
   });
 }
 
-/** Handle button press in game incomplete section */
 function handleAcknowledgeButton() {
   $('.acknowledge-button').on('click', function(event) {
     $('.game-incomplete').hide();
@@ -148,25 +156,6 @@ function handleSelectTarget() {
   });
 }
 
-function displayGameName() {
-  if (!CURRENT_GAME.opponentId) {
-    return;
-  }
-  $('.players')
-    .find('.player-id')
-    .text(
-      `${CURRENT_GAME.playerId.substring(0, CURRENT_GAME.playerId.length - 5)}`
-    );
-  $('.players')
-    .find('.opponent-id')
-    .text(
-      `${CURRENT_GAME.opponentId.substring(
-        0,
-        CURRENT_GAME.opponentId.length - 5
-      )}`
-    );
-}
-
 function setGameInfo(msg) {
   $('.game-info').html(msg);
 }
@@ -175,6 +164,10 @@ function generateJoinLink() {
   return `${window.location.origin}/join/${CURRENT_GAME.roomId}`;
 }
 
+/**
+ * Display results of opponents turn
+ * @param {*} coordinates coordinates on the grid where opponent made his turn
+ */
 function updateOpponentMove(coordinates) {
   const cellId = `board${coordinates.x}${coordinates.y}`;
   console.log(cellId);
@@ -200,6 +193,7 @@ function handlePlayersTurn() {
   });
 }
 
+/** Display a board where player makes turns and the results of previous turns (hit or miss) */
 function displayPlayersTurns() {
   // generate empty 10 by 10 grid
   let grid = [];
@@ -281,6 +275,7 @@ function displayTurnResult(data, coordinates) {
   }
 }
 
+/** Page view when it's opponent's turn */
 function setOpponetsTurn() {
   setGameInfo(`Enemy is making a move`);
   $('.battleship-game')
@@ -293,6 +288,7 @@ function setOpponetsTurn() {
   $('.navigation').removeClass('active');
 }
 
+/** Page view when it's player's turn */
 function setPlayersTurn() {
   setGameInfo('Your move');
   $('.battleship-game')
@@ -305,6 +301,7 @@ function setPlayersTurn() {
   $('.navigation').addClass('active');
 }
 
+/**Page view when current game is finished */
 function setGameFinished(isWinner) {
   $('.spinner').hide();
   setGameInfo('Game over');
@@ -341,12 +338,12 @@ function getTurnResult(coordinates, callback) {
   $.ajax(settings);
 }
 
+/** Manages current game display based on game status (who's turn, whether game is finished etc)  */
 function displayGameInfo() {
   if (!CURRENT_GAME.opponentId) {
     setGameInfo(
       'Waiting for someone to join...<a href="" target="_self"><i class="fas fa-question-circle"></i></a>'
     );
-    $('.loader-wrapper').show();
     return;
   }
 

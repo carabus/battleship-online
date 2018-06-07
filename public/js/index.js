@@ -1,3 +1,4 @@
+// playerId needs to be created before further interaction with a page
 $(getOrCreatePlayer);
 
 function handleApp() {

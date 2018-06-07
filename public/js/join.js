@@ -1,3 +1,4 @@
+// playerId needs to be created before further interaction with a page
 $(getOrCreatePlayer);
 
 function handleApp() {
@@ -5,13 +6,12 @@ function handleApp() {
   handleDismissErrorMessage();
 }
 
+/** Send API request to create new game for this playerId */
 function joinGame(callback) {
   const dataObject = {
     playerId: localStorage.playerId,
     roomId: roomId
   };
-
-  console.log(dataObject);
 
   let settings = {
     contentType: 'application/json',
@@ -27,5 +27,6 @@ function joinGame(callback) {
 }
 
 function displayGame(data) {
+  // once we get id of newly created game, game page handles it
   window.location.replace(`/game/${data.id}`);
 }

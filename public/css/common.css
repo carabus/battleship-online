@@ -18,7 +18,7 @@
 
 .error {
   box-sizing: border-box;
-  position: fixed;
+  position: absolute;
   background-color: rgb(255, 117, 117);
   text-align: center;
   min-height: 40px;
@@ -33,7 +33,7 @@
 .error p {
   font-family: 'Lato', sans-serif;
   font-size: 18px;
-  color: black;
+  color: rgb(0, 0, 0);
   padding: 0;
   margin: 0;
 }
@@ -49,7 +49,6 @@
   padding: 0 7px;
 }
 
-/*------------------------------COMMON COMPONENTS------------------------------*/
 .row {
   max-width: 1000px;
   padding: 20px 20px 0 20px;
@@ -68,7 +67,7 @@
 
 .error a,
 .row a {
-  color: black;
+  color: rgb(0, 0, 0);
   display: block;
   font-family: 'Lato', sans-serif;
   font-size: 15px;
@@ -83,8 +82,8 @@
   font-size: 18px;
   padding: 16px;
   color: black;
-  background-color: #ff7f50;
-  border: solid #f86029 2px;
+  background-color: rgb(255, 127, 80);
+  border: solid rgb(248, 96, 41) 2px;
   cursor: pointer;
 }
 

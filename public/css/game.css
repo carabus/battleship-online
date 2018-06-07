@@ -1,18 +1,3 @@
-.game-incomplete {
-  padding-top: 20px;
-}
-
-.game-info {
-  font-family: 'Lato', sans-serif;
-  font-size: 18px;
-
-  padding: 11px 0;
-  color: black;
-  font-weight: bold;
-  text-transform: uppercase;
-  display: inline-block;
-}
-
 main {
   padding-top: 40px;
 }
@@ -27,13 +12,12 @@ main {
   right: 0;
   top: 0;
   z-index: 10000;
-  /*background-color: #02a0a0;*/
   background-color: rgba(73, 80, 87, 0.3);
   transition: 0.6s;
 }
 
 .navigation.active {
-  background-color: #02a0a0;
+  background-color: rgb(2, 160, 160);
   transition: 0.6s;
 }
 
@@ -46,7 +30,22 @@ main {
   border-radius: 50%;
   width: 30px;
   height: 30px;
-  color: black;
+  color: rgb(0, 0, 0);
+}
+
+.game-incomplete {
+  padding-top: 20px;
+}
+
+.game-info {
+  font-family: 'Lato', sans-serif;
+  font-size: 18px;
+
+  padding: 11px 0;
+  color: rgb(0, 0, 0);
+  font-weight: bold;
+  text-transform: uppercase;
+  display: inline-block;
 }
 
 .flex-row {
@@ -64,7 +63,7 @@ main {
   font-size: 18px;
   padding: 16px;
   background-color: rgb(59, 59, 59);
-  color: white;
+  color: rgb(255, 255, 255);
   border: 0;
   box-shadow: none;
 }
@@ -74,7 +73,7 @@ main {
   font-size: 18px;
   padding: 16px;
   background-color: rgb(59, 59, 59);
-  color: white;
+  color: rgb(255, 255, 255);
   border: 0;
   box-shadow: none;
   cursor: pointer;
@@ -92,7 +91,7 @@ main {
 .ship.shot::before {
   font-family: 'Indie Flower', cursive;
   content: 'X';
-  color: #1c45fa;
+  color: rgb(28, 69, 250);
   text-align: center;
   font-size: 45px;
   top: -12px;
@@ -111,7 +110,7 @@ main {
 .shot:not(.ship)::before {
   font-family: 'Indie Flower', cursive;
   content: '.';
-  color: #1c45fa;
+  color: rgb(28, 69, 250);
   text-align: center;
   font-size: 45px;
   position: relative;
@@ -155,7 +154,7 @@ main {
   width: 1.5em;
   height: 1.5em;
   vertical-align: -0.25em;
-  border: 0 solid #fff;
+  border: 0 solid rgb(255, 255, 255);
   transition: 0.5s ease all;
   cursor: pointer;
 }
@@ -209,7 +208,7 @@ fieldset {
 
 .battleship-game-fieldset,
 .players-board {
-  border: solid black 1px;
+  border: solid rgb(0, 0, 0) 1px;
 }
 
 .fire {
@@ -224,10 +223,10 @@ fieldset {
   display: block;
 }
 
-p.game-name {
+p.board-name {
   font-family: 'Indie Flower', cursive;
   font-size: 20px;
-  color: #1c45fa;
+  color: rgb(28, 69, 250);
 }
 
 .game-complete p {
@@ -258,8 +257,8 @@ p.game-name {
   font-size: 40px;
   font-family: 'Merriweather Sans', sans-serif;
   font-weight: 800;
-  color: #f86029;
-  animation: test 3s;
+  color: rgb(248, 96, 41);
+  animation: players-anim 3s;
   opacity: 0;
 }
 
@@ -267,7 +266,7 @@ p.game-name {
   animation: op 3s;
 }
 
-@keyframes test {
+@keyframes players-anim {
   0% {
     opacity: 0;
     z-index: 10000;
