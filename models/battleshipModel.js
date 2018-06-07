@@ -1,7 +1,13 @@
 'use strict';
 
 const mongoose = require('mongoose');
-
+/**
+ * Each player has its own BattleshipGame entry that stores all information required to display
+ * the game from this player POV. This information includes: players' ships, results of this player's turns
+ * made so far, turns made by this player's opponent, game status info etc, but excludes information such as
+ * opponent's ships locations.
+ * 2 BattleshipGame entries that belong to the same game but 2 different players are connected by roomId value.
+ */
 let battleshipGameSchema = mongoose.Schema(
   {
     playerId: { type: String, required: true },

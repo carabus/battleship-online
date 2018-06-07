@@ -6,7 +6,10 @@ const { BattleshipGame } = require('../models/battleshipModel');
 const { GAME_TEMPLATE, GAME_LENGTH } = require('../gameSettings');
 const gameGenerator = require('./battleshipGameGenerator');
 
-// join game
+/**
+ * POST request to create a game in the room for a particular player.
+ * Required fields are: playerId, roomId
+ */
 router.post('/', jsonParser, async (req, res) => {
   try {
     // check for required fields
@@ -71,7 +74,10 @@ router.post('/', jsonParser, async (req, res) => {
   }
 });
 
-// make turn
+/**
+ * PUT request to make a turn in the game.
+ * Returns turn result, e.g. hit or miss and whether game still continues after this turn
+ */
 router.put('/:id', jsonParser, async (req, res) => {
   try {
     // check that id in request params corresponds to id in request body

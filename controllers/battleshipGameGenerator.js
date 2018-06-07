@@ -3,6 +3,10 @@
 // define template - what kind of ships to place on the grid
 const { GAME_TEMPLATE, GAME_LENGTH } = require('../gameSettings');
 
+/**
+ * Generate Ship coordinates on the grid from template.
+ * Ensures no ships are placed next to each other.
+ */
 function generateShips() {
   // generate grid with coordinates and place availability information
   // extra 1 square margins added to simplify algorithm

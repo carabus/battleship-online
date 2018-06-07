@@ -183,7 +183,7 @@ describe('Battleship Game API', function() {
       });
     });
 
-    it('Update who has next turn', function() {
+    it('Updates who has next turn', function() {
       const newRoomId = Date.now();
       return seedBattleshipGameData(1, newRoomId).then(function(res) {
         const newBattleshipGame = { playerId: 'player2', roomId: newRoomId };
