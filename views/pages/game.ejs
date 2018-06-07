@@ -7,6 +7,7 @@
 
     <link rel="stylesheet" href="../css/game.css">
     <script src="../js/game.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/animejs/2.0.2/anime.min.js"></script>
 </head>
 
 <body class="bg">
@@ -19,9 +20,18 @@
       <div class="logo bg">B</div>
     </a>
     <div class="game-info"></div>
+    <img class="spinner not-visible" src="../images/spinner.svg">
   </nav>
 
   <main role="main">
+
+    <div class="players not-visible">
+      <div class="row">
+        <p class="player-id"></p>
+        <p>VS</p>
+        <p class="opponent-id"></p>
+      </div>
+    </div>
 
     <section class="game-complete convex not-visible shadow">
       <div class="row">
@@ -48,17 +58,18 @@
     </section>
 
     <section class="game not-visible">
-      <div class="game-name not-visible">
-        <div class="row flex-row">
-          <p></p>
-        </div>
-      </div>
+
       <div class="game-boards">
         <div class="row flex-row">
           <form class="battleship-game">
-            <div class="players-turns shadow">
-              <fieldset class="battleship-game-fieldset" disabled>
-                <legend></legend>
+            <div class="players-turns">
+              <fieldset disabled>
+                <legend>
+                  <p class="game-name">Enemy ships</p>
+                </legend>
+                <div class="battleship-game-fieldset shadow">
+
+                </div>
               </fieldset>
             </div>
             <button type="submit" class="fire primary-button not-visible">
@@ -66,7 +77,10 @@
           </form>
         </div>
         <div class="row flex-row">
-          <div class="players-board"></div>
+          <div>
+            <p class="game-name">My ships</p>
+            <div class="players-board"></div>
+          </div>
         </div>
       </div>
       <div class="row flex-row">

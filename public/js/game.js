@@ -8,6 +8,7 @@ function handleApp() {
 
   if (CURRENT_GAME.opponentId) {
     displayGame();
+    displayPlayers();
     socket.emit('joined', {
       roomId: CURRENT_GAME.roomId,
       playerId: CURRENT_GAME.playerId
@@ -48,9 +49,32 @@ function initRealTimeUpdates() {
     $('.game-incomplete').hide();
     if (!CURRENT_GAME.opponentId) {
       CURRENT_GAME.opponentId = opponentId;
-      displayGame(CURRENT_GAME);
+      displayGame();
+      displayPlayers();
     }
   });
+}
+
+function displayPlayers() {
+  if (!CURRENT_GAME.opponentId) {
+    return;
+  }
+  $('.players')
+    .find('.player-id')
+    .text(
+      `${CURRENT_GAME.playerId.substring(0, CURRENT_GAME.playerId.length - 5)}`
+    );
+  $('.players')
+    .find('.opponent-id')
+    .text(
+      `${CURRENT_GAME.opponentId.substring(
+        0,
+        CURRENT_GAME.opponentId.length - 5
+      )}`
+    );
+
+  $('.players').show();
+  $('.game').addClass('opaque');
 }
 
 /** Display all game related UI elements: status, players, boards, legend */
@@ -128,10 +152,19 @@ function displayGameName() {
   if (!CURRENT_GAME.opponentId) {
     return;
   }
-  $('.game-name')
-    .find('p')
-    .text(`${CURRENT_GAME.playerId} VS ${CURRENT_GAME.opponentId}`);
-  $('.game-name').show();
+  $('.players')
+    .find('.player-id')
+    .text(
+      `${CURRENT_GAME.playerId.substring(0, CURRENT_GAME.playerId.length - 5)}`
+    );
+  $('.players')
+    .find('.opponent-id')
+    .text(
+      `${CURRENT_GAME.opponentId.substring(
+        0,
+        CURRENT_GAME.opponentId.length - 5
+      )}`
+    );
 }
 
 function setGameInfo(msg) {
@@ -147,7 +180,8 @@ function updateOpponentMove(coordinates) {
   console.log(cellId);
   $('.players-board')
     .find(`#${cellId}`)
-    .addClass('shot');
+    .addClass('shot')
+    .addClass('anim');
 }
 
 function handlePlayersTurn() {
@@ -227,7 +261,8 @@ function displayTurnResult(data, coordinates) {
     .removeClass('empty');
   $(`#${cellId}`)
     .closest('div')
-    .addClass(cellClass);
+    .addClass(cellClass)
+    .addClass('anim');
   $(`#${cellId}`).prop('checked', false);
   $(`#${cellId}`).attr('disabled', 'disabled');
 
@@ -247,20 +282,31 @@ function displayTurnResult(data, coordinates) {
 }
 
 function setOpponetsTurn() {
+  setGameInfo(`Enemy is making a move`);
+  $('.battleship-game')
+    .find('legend')
+    .find('p')
+    .text('Enemy ships');
+  $('.spinner').show();
   disableForm('battleship-game');
   $('.game').removeClass('players-turn');
-  setGameInfo(`Opponent's turn`);
   $('.navigation').removeClass('active');
 }
 
 function setPlayersTurn() {
+  setGameInfo('Your move');
+  $('.battleship-game')
+    .find('legend')
+    .find('p')
+    .text('Select target');
+  $('.spinner').hide();
   enableForm('battleship-game');
   $('.game').addClass('players-turn');
-  setGameInfo('Your turn');
   $('.navigation').addClass('active');
 }
 
 function setGameFinished(isWinner) {
+  $('.spinner').hide();
   setGameInfo('Game over');
   $('.game').removeClass('players-turn');
   $('.game-complete')
@@ -300,6 +346,7 @@ function displayGameInfo() {
     setGameInfo(
       'Waiting for someone to join...<a href="" target="_self"><i class="fas fa-question-circle"></i></a>'
     );
+    $('.loader-wrapper').show();
     return;
   }
 
