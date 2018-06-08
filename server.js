@@ -61,7 +61,12 @@ io.on('connection', function(socket) {
       }`
     );
 
-    socket.broadcast.to(data.roomId).emit('turn-update', data.coordinates);
+    socket.broadcast
+      .to(data.roomId)
+      .emit('turn-update', {
+        coordinates: data.coordinates,
+        result: data.result
+      });
   });
 
   socket.on('game-finished', function(data) {

@@ -1,3 +1,12 @@
+// Getting aria labels for table cells depending on the cell state
+const ariaLabels = {
+  ship: 'ship',
+  'ship shot': 'ship shot',
+  empty: 'empty',
+  'empty shot': 'miss',
+  hit: 'hit',
+  miss: 'miss'
+};
 let socket;
 
 $(handleApp);
@@ -38,12 +47,18 @@ function initRealTimeUpdates() {
   socket = io();
   socket.emit('join-room', CURRENT_GAME.roomId);
 
-  socket.on('turn-update', function(coordinates) {
+  socket.on('turn-update', function(data) {
     console.log(
-      `Turn was made at coordinates ${coordinates.x}, ${coordinates.y}`
+      `Turn was made at coordinates ${data.coordinates.x}, ${
+        data.coordinates.y
+      }`
     );
-    updateOpponentMove(coordinates);
+    updateOpponentMove(data.coordinates);
     setPlayersTurn();
+    $('.status-update p').text(
+      `Enemy has made a move at coordinates ${data.coordinates.x + 1}, ${data
+        .coordinates.y + 1}. The result is ${data.result}.`
+    );
   });
 
   socket.on('game-finished-update', function(winner) {
@@ -217,12 +232,16 @@ function displayPlayersTurns() {
   // generate html for displaying the grid
   let htmlString = '';
   for (let i = 0; i < 10; i++) {
-    htmlString += `<div class="board-row">`;
+    htmlString += `<div class="board-row" role="row">`;
     for (j = 0; j < 10; j++) {
       const disabled = grid[j][i].state === 'empty' ? '' : 'disabled';
-      htmlString += `<div class="board-column columnwidth ${grid[j][i].state}">
+      htmlString += `<div class="board-column columnwidth ${
+        grid[j][i].state
+      }" role="cell">
       <label for="${j}${i}">
-      <input type="radio" id="${j}${i}" name="cell" ${disabled} required>
+      <input type="radio" id="${j}${i}" name="cell" ${disabled} required aria-label=${
+        ariaLabels[grid[j][i].state]
+      }>
       <span> </span>
       </label></div>`;
     }
@@ -263,7 +282,11 @@ function displayTurnResult(data, coordinates) {
   // Update turn information
   setOpponetsTurn();
 
-  socket.emit('turn', { roomId: CURRENT_GAME.roomId, coordinates });
+  socket.emit('turn', {
+    roomId: CURRENT_GAME.roomId,
+    coordinates,
+    result: cellClass
+  });
 
   // check if game is finished
   if (data.finished) {
@@ -273,6 +296,12 @@ function displayTurnResult(data, coordinates) {
       winner: data.winner
     });
   }
+
+  // update game state in text format
+  $('.status-update p').text(
+    `You've made a move at coordinates ${coordinates.x + 1}, ${coordinates.y +
+      1}. The result is ${cellClass}.`
+  );
 }
 
 /** Page view when it's opponent's turn */
@@ -312,6 +341,9 @@ function setGameFinished(isWinner) {
   $('.game-complete').show();
   disableForm('battleship-game');
   $('.navigation').addClass('active');
+  $('.status-update p').text(
+    `Game is finished! You ${isWinner ? 'win' : 'loose'}!`
+  );
 }
 
 function getTurnResult(coordinates, callback) {
@@ -342,7 +374,7 @@ function getTurnResult(coordinates, callback) {
 function displayGameInfo() {
   if (!CURRENT_GAME.opponentId) {
     setGameInfo(
-      'Waiting for someone to join...<a href="" target="_self"><i class="fas fa-question-circle"></i></a>'
+      'Waiting for someone to join <a href="" target="_self" aria-label="Go back to previous screen to copy join game link">?</a>'
     );
     return;
   }
@@ -386,13 +418,15 @@ function displayPlayersBoard() {
   // generate html for displaying the grid
   let gridHtml = '';
   for (let i = 0; i < 10; i++) {
-    gridHtml += '<div class="board-row">';
+    gridHtml += '<div class="board-row" role="row">';
     for (let j = 0; j < 10; j++) {
       let shipCanvas = grid[j][i].state.includes('ship')
         ? `<canvas id="canvas${j}${i}" width="24" height="24"></canvas>`
         : '';
-      gridHtml += `<div class="board-column columnwidth"><div id="board${j}${i}" class="board ${
+      gridHtml += `<div class="board-column columnwidth" role="cell"><div id="board${j}${i}" class="board ${
         grid[j][i].state
+      }" aria-label="${
+        ariaLabels[grid[j][i].state]
       }">${shipCanvas}</div></div>`;
     }
     gridHtml += '</div>';

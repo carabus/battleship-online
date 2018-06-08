@@ -234,6 +234,7 @@ p.board-name {
   text-transform: capitalize;
   font-size: 70px;
   color: rgb(59, 59, 59);
+  line-height: 1;
 }
 
 .spinner {
@@ -296,6 +297,20 @@ p.board-name {
   .game-info {
     font-size: 14px;
     padding: 13px 0 13px 15px;
+  }
+
+  .players p {
+    font-size: 30px;
+  }
+}
+
+@media only screen and (max-height: 400px) {
+  .players p {
+    font-size: 30px;
+  }
+
+  .players {
+    top: 50%;
   }
 }
 

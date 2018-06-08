@@ -16,11 +16,11 @@
   </script>
 
   <nav role="banner" class="navigation">
-    <a href="/" target="_self" title="Go to home page">
+    <a href="/" target="_self" title="Go to start page">
       <div class="logo bg">B</div>
     </a>
     <div class="game-info"></div>
-    <img class="spinner not-visible" src="../images/spinner.svg">
+    <img class="spinner not-visible" src="../images/spinner.svg" alt="waiting">
   </nav>
 
   <main role="main">
@@ -67,7 +67,7 @@
                 <legend>
                   <p class="board-name">Enemy ships</p>
                 </legend>
-                <div class="battleship-game-fieldset shadow">
+                <div class="battleship-game-fieldset shadow" role="table">
 
                 </div>
               </fieldset>
@@ -79,12 +79,17 @@
         <div class="row flex-row">
           <div>
             <p class="board-name">My ships</p>
-            <div class="players-board"></div>
+            <div class="players-board" role="table"></div>
           </div>
         </div>
       </div>
       <div class="row flex-row">
-        <div class="legend">
+        <div class="status-update" aria-live="polite">
+          <p></p>
+        </div>
+      </div>
+      <div class="row flex-row">
+        <div class="legend" aria-hidden="true">
           <div class="legend-item">
             <div class="hit"></div>
             <div>

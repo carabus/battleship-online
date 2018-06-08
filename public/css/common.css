@@ -65,13 +65,22 @@
   color: rgb(59, 59, 59);
 }
 
+.navigation a,
 .error a,
 .row a {
   color: rgb(0, 0, 0);
-  display: block;
   font-family: 'Lato', sans-serif;
-  font-size: 15px;
   margin-top: 5px;
+}
+
+.navigation a {
+  font-size: 18px;
+}
+
+.error a,
+.row a {
+  display: block;
+  font-size: 15px;
 }
 
 /*------------------------------BUTTONS------------------------------*/
