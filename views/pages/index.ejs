@@ -10,33 +10,36 @@
 </head>
 
 <body>
-  <header role="banner" class="bg convex">
+  <div class="bg convex">
+    <header role="banner">
+      <div class="row">
+        <img class="ship" src="../images/ship.svg" alt="an image of battleship">
+      </div>
+      <div class="row">
+        <h1>Battleship Online</h1>
+      </div>
+    </header>
+    <main role="main">
+      <div class="row">
+        <p class="intro">A casual game of Battleship to play with a friend.</p>
+        <p class="intro">No registration, pen or paper is required ;)</p>
+      </div>
 
-    <div class="row">
-      <img class="ship" src="../images/ship.svg">
-    </div>
-    <div class="row">
-      <h1>Battleship Online</h1>
-    </div>
-
-    <div class="row">
-      <p class="intro">A casual game of Battleship to play with a friend.</p>
-      <p class="intro">No registration, pen or paper is required ;)</p>
-    </div>
-
-    <div class="row not-visible new-game-section">
-      <p class="hello">Hello, </p>
-      <button type="button" class="player secondary-button" data-intro="We've created this user name for you. If you don't like it, press the button and we'll try again."
-        data-position="top">
-      </button>
-      <button type="button" class="new-battle primary-button" data-intro="Jump straight into the game." data-position="bottom">
-        <i class="fas fa-bomb"></i> Start Battle!</button>
-      <p>
-        <a class="whats-this" href="javascript:void(0)">I need some help</a>
-      </p>
-    </div>
-  </header>
-  <% include ../partials/error %>
+      <div class="row not-visible new-game-section">
+        <p class="hello">Hello, </p>
+        <button type="button" aria-live="polite" class="player secondary-button" data-intro="We've created this user name for you. If you don't like it, press the button and we'll try again."
+          data-position="top" aria-describedby="button-help">
+        </button>
+        <button type="button" class="new-battle primary-button" data-intro="Jump straight into the game." data-position="bottom">
+          <i class="fas fa-bomb"></i> Start Battle!</button>
+        <p>
+          <a class="whats-this" href="javascript:void(0)" aria-hidden="true">I need some help</a>
+        </p>
+      </div>
+      <div id="button-help" class="not-visible">This is auto generated player name. Press button to generate a new one.</div>
+    </main>
+    <% include ../partials/error %>
+  </div>
 </body>
 
 </html>
