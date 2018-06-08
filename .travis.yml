@@ -6,6 +6,6 @@ deploy:
   provider: heroku
   api_key:
     secure: Daqa3ivELE+aC1s2t4jbIC9FBJnx6O3uHAdbZ7RWDCsMnZTW/9Fq1KlFwgMw84oRy3+BvO055umF75gCBgZN37IUtNMaSpHiCO5rHrFR5uuW+QFOnf5TAbdXqaFP0UuJ/SDiHC3h37dGM3UfVTrs9jOMBpD1mSyJ1KO3uQUFsun060947VJ0ly2yTukMYE6H747gSMyFzm8ljlVMLRDMPj81UHJumSgL7q7Si7RnJMt2L56BZLTyBQ/a0rpmQZIdJFaH/nKQwy1rK6rKkX5S15cy9y+toSTNqMgw2+UMMaJUMwyOvMS90TrXErKKs+p/lA0yafb2305omkfbGvysNOP9GRUYiAOfLjSXiYqeu3V8BF2BqpmWTNb6w0Qp2VyU7gmOmyM+Z9oQ/8PYq2AfZYHJDLIRPssdd7m4rwAblCU7BO0eNSamzkTlyhAuXZhPBJbbfPmRg8z0t+HIzb16bpDe1a/LW0j/gXU19qc//9jbS3pQA2bm1nhTnqKROxFOlF7hrmdV+QNfDifZK8wBd53tG9eaITRb6YGQZxF2oBPgf/uQOUt9iZahtKkeqniIo9k5ZLTa3Bcw+T3dnRHSLOZyuPvo5RugUvxC5wUph+53yLIxoU7oTs+YPE6fud/fJvo1/qnailzPp8ny99MTQg50aJSOx0eO0LUWqauwkoo=
-  app: desolate-brushlands-44404
+  app: carabus-battleship
   on:
     repo: carabus/battleship-online
