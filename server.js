@@ -41,13 +41,14 @@ app.get('/game/:id', function(req, res) {
     });
 });
 
-// all other routes display not found message
+// go to home page when non existing url requested
 app.use('*', (req, res) => {
   res.render('pages/index');
 });
 
 // handle socket.io events
 io.on('connection', function(socket) {
+  // Add player to socket.io room to enable message exchange within this room only
   socket.on('join-room', function(roomId) {
     console.log('joined room: ' + roomId);
     socket.join(roomId);
@@ -60,7 +61,12 @@ io.on('connection', function(socket) {
       }`
     );
 
-    socket.broadcast.to(data.roomId).emit('turn-update', data.coordinates);
+    socket.broadcast
+      .to(data.roomId)
+      .emit('turn-update', {
+        coordinates: data.coordinates,
+        result: data.result
+      });
   });
 
   socket.on('game-finished', function(data) {
@@ -70,6 +76,7 @@ io.on('connection', function(socket) {
     socket.broadcast.to(data.roomId).emit('game-finished-update', data.winner);
   });
 
+  // this event happens when second player joins room and the game can start
   socket.on('joined', function(data) {
     console.log(`game was joined at ${data.roomId} by ${data.playerId}.`);
     socket.broadcast.to(data.roomId).emit('joined-update', data.playerId);

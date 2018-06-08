@@ -15,13 +15,22 @@
   </script>
 
   <nav role="banner" class="navigation">
-    <a href="/" target="_self" title="Go to home page">
+    <a href="/" target="_self" title="Go to start page">
       <div class="logo bg">B</div>
     </a>
     <div class="game-info"></div>
+    <img class="spinner not-visible" src="../images/spinner.svg" alt="waiting">
   </nav>
 
   <main role="main">
+
+    <div class="players not-visible">
+      <div class="row">
+        <p class="player-id"></p>
+        <p>VS</p>
+        <p class="opponent-id"></p>
+      </div>
+    </div>
 
     <section class="game-complete convex not-visible shadow">
       <div class="row">
@@ -48,17 +57,18 @@
     </section>
 
     <section class="game not-visible">
-      <div class="game-name not-visible">
-        <div class="row flex-row">
-          <p></p>
-        </div>
-      </div>
+
       <div class="game-boards">
         <div class="row flex-row">
           <form class="battleship-game">
-            <div class="players-turns shadow">
-              <fieldset class="battleship-game-fieldset" disabled>
-                <legend></legend>
+            <div class="players-turns">
+              <fieldset disabled>
+                <legend>
+                  <p class="board-name">Enemy ships</p>
+                </legend>
+                <div class="battleship-game-fieldset shadow" role="table">
+
+                </div>
               </fieldset>
             </div>
             <button type="submit" class="fire primary-button not-visible">
@@ -66,11 +76,19 @@
           </form>
         </div>
         <div class="row flex-row">
-          <div class="players-board"></div>
+          <div>
+            <p class="board-name">My ships</p>
+            <div class="players-board" role="table"></div>
+          </div>
         </div>
       </div>
       <div class="row flex-row">
-        <div class="legend">
+        <div class="status-update" aria-live="polite">
+          <p></p>
+        </div>
+      </div>
+      <div class="row flex-row">
+        <div class="legend" aria-hidden="true">
           <div class="legend-item">
             <div class="hit"></div>
             <div>

@@ -1,14 +1,11 @@
-function setPlayerAndHandleApp(playerId) {
-  setPlayer(playerId);
-  handleApp();
-}
-
-function setPlayer(playerId) {
-  window.localStorage.setItem('playerId', playerId);
-}
-
+/**
+ * If there is playerId in local storage -> display app page
+ * If no playerId ->
+ * make asyncronous call to get playerId
+ * then store playerId in local storage
+ * then display app page
+ */
 function getOrCreatePlayer() {
-  // if no player id only display create player
   let playerId = window.localStorage.getItem('playerId');
   if (playerId) {
     handleApp();
@@ -31,6 +28,20 @@ function createPlayerName(callback) {
   $.ajax(settings);
 }
 
+function setPlayerAndHandleApp(playerId) {
+  setPlayer(playerId);
+  handleApp();
+}
+
+function setPlayer(playerId) {
+  window.localStorage.setItem('playerId', playerId);
+}
+
+function createAndJoinGame() {
+  const roomId = Date.now();
+  window.location.replace(`/join/${roomId}`);
+}
+
 function displayErrorMessage() {
   $('.error')
     .find('p')
@@ -42,9 +53,4 @@ function handleDismissErrorMessage() {
   $('.dismiss-error-message').on('click', function(event) {
     $('.error').hide();
   });
-}
-
-function createAndJoinGame() {
-  const roomId = Date.now();
-  window.location.replace(`/join/${roomId}`);
 }

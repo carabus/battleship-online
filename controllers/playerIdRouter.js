@@ -2,6 +2,9 @@ const router = require('express').Router();
 const jsonParser = require('body-parser').json();
 const moniker = require('moniker');
 
+/**
+ * Generate random and fairly unique player id using moniker
+ */
 router.get('/', jsonParser, (req, res) => {
   return res.status(200).json({
     playerId: `${moniker.choose()}-${getRandomInt(1000, 9999)}`

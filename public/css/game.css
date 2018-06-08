@@ -1,23 +1,8 @@
-.game-incomplete {
-  padding-top: 20px;
-}
-
-.game-info {
-  font-family: 'Lato', sans-serif;
-  font-size: 18px;
-
-  padding: 11px;
-  color: black;
-  font-weight: bold;
-  text-transform: uppercase;
-}
-
 main {
   padding-top: 40px;
 }
 
 .navigation {
-  transition: 0.5s;
   position: fixed;
   display: block;
   text-align: center;
@@ -28,10 +13,12 @@ main {
   top: 0;
   z-index: 10000;
   background-color: rgba(73, 80, 87, 0.3);
+  transition: 0.6s;
 }
 
 .navigation.active {
-  background-color: #02a0a0;
+  background-color: rgb(2, 160, 160);
+  transition: 0.6s;
 }
 
 .logo {
@@ -43,7 +30,22 @@ main {
   border-radius: 50%;
   width: 30px;
   height: 30px;
-  color: black;
+  color: rgb(0, 0, 0);
+}
+
+.game-incomplete {
+  padding-top: 20px;
+}
+
+.game-info {
+  font-family: 'Lato', sans-serif;
+  font-size: 18px;
+
+  padding: 11px 0;
+  color: rgb(0, 0, 0);
+  font-weight: bold;
+  text-transform: uppercase;
+  display: inline-block;
 }
 
 .flex-row {
@@ -61,7 +63,7 @@ main {
   font-size: 18px;
   padding: 16px;
   background-color: rgb(59, 59, 59);
-  color: white;
+  color: rgb(255, 255, 255);
   border: 0;
   box-shadow: none;
 }
@@ -71,53 +73,49 @@ main {
   font-size: 18px;
   padding: 16px;
   background-color: rgb(59, 59, 59);
-  color: white;
+  color: rgb(255, 255, 255);
   border: 0;
   box-shadow: none;
   cursor: pointer;
 }
 
 /*----------Game Grids Styling----------*/
-.hit::before {
-  font-family: 'Indie Flower', cursive;
-  content: 'X';
-  color: #1c45fa;
-  text-align: center;
-  font-size: 45px;
-  position: relative;
-  top: -12px;
-  z-index: -1;
+.hit.anim::before,
+.miss.anim::before,
+.ship.shot.anim::before,
+.shot:not(.ship).anim::before {
+  animation: pulse 1s;
 }
 
-.miss::before {
-  font-family: 'Indie Flower', cursive;
-  content: '.';
-  color: #1c45fa;
-  text-align: center;
-  font-size: 45px;
-  position: relative;
-  top: -18px;
-  z-index: -1;
-}
-
-.shot:not(.ship)::before {
-  font-family: 'Indie Flower', cursive;
-  content: '.';
-  color: #1c45fa;
-  text-align: center;
-  font-size: 45px;
-  position: relative;
-  top: -18px;
-}
-
+.hit::before,
 .ship.shot::before {
   font-family: 'Indie Flower', cursive;
   content: 'X';
-  color: #1c45fa;
+  color: rgb(28, 69, 250);
   text-align: center;
   font-size: 45px;
-  position: absolute;
   top: -12px;
+  z-index: -1;
+}
+
+.hit::before {
+  position: relative;
+}
+
+.ship.shot::before {
+  position: absolute;
+}
+
+.miss::before,
+.shot:not(.ship)::before {
+  font-family: 'Indie Flower', cursive;
+  content: '.';
+  color: rgb(28, 69, 250);
+  text-align: center;
+  font-size: 45px;
+  position: relative;
+  top: -20px;
+  z-index: -1;
 }
 
 .empty {
@@ -131,10 +129,6 @@ main {
 
 .ship {
   position: relative;
-}
-
-.ship.top {
-  border-radius: 50% 50% 0 0;
 }
 
 [type='radio'] {
@@ -160,7 +154,7 @@ main {
   width: 1.5em;
   height: 1.5em;
   vertical-align: -0.25em;
-  border: 0 solid #fff;
+  border: 0 solid rgb(255, 255, 255);
   transition: 0.5s ease all;
   cursor: pointer;
 }
@@ -205,7 +199,6 @@ fieldset {
   border-left-width: 0;
   border-top-width: 0;
   float: left;
-  cursor: pointer;
 }
 
 .columnwidth {
@@ -213,9 +206,9 @@ fieldset {
   height: 1.5em;
 }
 
-.players-turns,
+.battleship-game-fieldset,
 .players-board {
-  border: solid black 1px;
+  border: solid rgb(0, 0, 0) 1px;
 }
 
 .fire {
@@ -230,10 +223,10 @@ fieldset {
   display: block;
 }
 
-.game-name p {
+p.board-name {
   font-family: 'Indie Flower', cursive;
   font-size: 20px;
-  color: #1c45fa;
+  color: rgb(28, 69, 250);
 }
 
 .game-complete p {
@@ -241,12 +234,83 @@ fieldset {
   text-transform: capitalize;
   font-size: 70px;
   color: rgb(59, 59, 59);
+  line-height: 1;
+}
+
+.spinner {
+  width: 30px;
+  height: 30px;
+  position: relative;
+  top: 7px;
+  left: 3px;
+}
+
+.players {
+  position: absolute;
+  width: 100%;
+  top: 30%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  z-index: -1;
+}
+
+.players p {
+  font-size: 40px;
+  font-family: 'Merriweather Sans', sans-serif;
+  font-weight: 800;
+  color: rgb(248, 96, 41);
+  animation: players-anim 3s;
+  opacity: 0;
+}
+
+.opaque {
+  animation: op 3s;
+}
+
+@keyframes players-anim {
+  0% {
+    opacity: 0;
+    z-index: 10000;
+  }
+  70% {
+    opacity: 1;
+    z-index: 10000;
+  }
+  100% {
+    opacity: 0;
+    z-index: -1;
+  }
+}
+
+@keyframes op {
+  0% {
+    filter: opacity(0.3);
+  }
+  70% {
+    filter: opacity(0.3);
+  }
+  100% {
+  }
 }
 
 @media only screen and (max-width: 400px) {
   .game-info {
     font-size: 14px;
     padding: 13px 0 13px 15px;
+  }
+
+  .players p {
+    font-size: 30px;
+  }
+}
+
+@media only screen and (max-height: 400px) {
+  .players p {
+    font-size: 30px;
+  }
+
+  .players {
+    top: 50%;
   }
 }
 
@@ -270,11 +334,11 @@ fieldset {
   }
 
   .game-info {
-    padding: 22px;
+    padding: 22px 0;
   }
 
-  .game-name p {
-    font-size: 24px;
+  .spinner {
+    top: 8px;
   }
 }
 
@@ -296,6 +360,12 @@ fieldset {
   .join-game-link {
     width: unset;
   }
+}
+
+legend {
+  width: 100%;
+  margin-left: auto;
+  margin-right: auto;
 }
 
 .legend {
@@ -332,4 +402,25 @@ fieldset {
 
 .game-complete {
   padding-bottom: 20px;
+}
+
+@keyframes pulse {
+  0% {
+    opacity: 1;
+  }
+  20% {
+    opacity: 0;
+  }
+  40% {
+    opacity: 1;
+  }
+  60% {
+    opacity: 0;
+  }
+  80% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
 }

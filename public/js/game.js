@@ -1,13 +1,29 @@
+// Getting aria labels for table cells depending on the cell state
+const ariaLabels = {
+  ship: 'ship',
+  'ship shot': 'ship shot',
+  empty: 'empty',
+  'empty shot': 'miss',
+  hit: 'hit',
+  miss: 'miss'
+};
 let socket;
 
 $(handleApp);
 
 function handleApp() {
+  // We get all current game details from backend in ejs template variable
   CURRENT_GAME = JSON.parse(CURRENT_GAME);
+
+  // init socket.io and handle socket.io events
   initRealTimeUpdates();
 
+  // opponentId only available when someone has joined the game
+  // if both players present, we display a game ready to play
+  // if no one has joined, we display instructions how to invite other player
   if (CURRENT_GAME.opponentId) {
     displayGame();
+    displayPlayers();
     socket.emit('joined', {
       roomId: CURRENT_GAME.roomId,
       playerId: CURRENT_GAME.playerId
@@ -26,17 +42,23 @@ function handleApp() {
   handleDismissErrorMessage();
 }
 
-/** Init socket.io and handle game status updates sent via socket */
+/** Init socket.io and handle socket.io events */
 function initRealTimeUpdates() {
   socket = io();
   socket.emit('join-room', CURRENT_GAME.roomId);
 
-  socket.on('turn-update', function(coordinates) {
+  socket.on('turn-update', function(data) {
     console.log(
-      `Turn was made at coordinates ${coordinates.x}, ${coordinates.y}`
+      `Turn was made at coordinates ${data.coordinates.x}, ${
+        data.coordinates.y
+      }`
     );
-    updateOpponentMove(coordinates);
+    updateOpponentMove(data.coordinates);
     setPlayersTurn();
+    $('.status-update p').text(
+      `Enemy has made a move at coordinates ${data.coordinates.x + 1}, ${data
+        .coordinates.y + 1}. The result is ${data.result}.`
+    );
   });
 
   socket.on('game-finished-update', function(winner) {
@@ -48,9 +70,35 @@ function initRealTimeUpdates() {
     $('.game-incomplete').hide();
     if (!CURRENT_GAME.opponentId) {
       CURRENT_GAME.opponentId = opponentId;
-      displayGame(CURRENT_GAME);
+      displayGame();
+      displayPlayers();
     }
   });
+}
+
+/**
+ * Display animation that shows players in the game at the beginning of the game, e.g. "player1 vs player2"
+ */
+function displayPlayers() {
+  if (!CURRENT_GAME.opponentId) {
+    return;
+  }
+  $('.players')
+    .find('.player-id')
+    .text(
+      `${CURRENT_GAME.playerId.substring(0, CURRENT_GAME.playerId.length - 5)}`
+    );
+  $('.players')
+    .find('.opponent-id')
+    .text(
+      `${CURRENT_GAME.opponentId.substring(
+        0,
+        CURRENT_GAME.opponentId.length - 5
+      )}`
+    );
+
+  $('.players').show();
+  $('.game').addClass('opaque');
 }
 
 /** Display all game related UI elements: status, players, boards, legend */
@@ -62,7 +110,6 @@ function displayGame() {
   displayPlayersBoard();
   displayPlayersTurns();
   displayGameInfo();
-  displayGameName();
 
   $('.game').show();
 }
@@ -80,6 +127,7 @@ function handleCopyLink() {
     $temp.val($('.join-game-link').text());
     $('body').append($temp);
 
+    // This is required to workaround security features in iOS
     if (navigator.userAgent.match('/ipad|ipod|iphone/i')) {
       var el = $('#temp').get(0);
       var editable = el.contentEditable;
@@ -103,7 +151,6 @@ function handleCopyLink() {
   });
 }
 
-/** Handle button press in game incomplete section */
 function handleAcknowledgeButton() {
   $('.acknowledge-button').on('click', function(event) {
     $('.game-incomplete').hide();
@@ -124,16 +171,6 @@ function handleSelectTarget() {
   });
 }
 
-function displayGameName() {
-  if (!CURRENT_GAME.opponentId) {
-    return;
-  }
-  $('.game-name')
-    .find('p')
-    .text(`${CURRENT_GAME.playerId} VS ${CURRENT_GAME.opponentId}`);
-  $('.game-name').show();
-}
-
 function setGameInfo(msg) {
   $('.game-info').html(msg);
 }
@@ -142,12 +179,16 @@ function generateJoinLink() {
   return `${window.location.origin}/join/${CURRENT_GAME.roomId}`;
 }
 
+/**
+ * Display results of opponents turn
+ * @param {*} coordinates coordinates on the grid where opponent made his turn
+ */
 function updateOpponentMove(coordinates) {
   const cellId = `board${coordinates.x}${coordinates.y}`;
-  console.log(cellId);
   $('.players-board')
     .find(`#${cellId}`)
-    .addClass('shot');
+    .addClass('shot')
+    .addClass('anim');
 }
 
 function handlePlayersTurn() {
@@ -166,6 +207,7 @@ function handlePlayersTurn() {
   });
 }
 
+/** Display a board where player makes turns and the results of previous turns (hit or miss) */
 function displayPlayersTurns() {
   // generate empty 10 by 10 grid
   let grid = [];
@@ -189,12 +231,16 @@ function displayPlayersTurns() {
   // generate html for displaying the grid
   let htmlString = '';
   for (let i = 0; i < 10; i++) {
-    htmlString += `<div class="board-row">`;
+    htmlString += `<div class="board-row" role="row">`;
     for (j = 0; j < 10; j++) {
       const disabled = grid[j][i].state === 'empty' ? '' : 'disabled';
-      htmlString += `<div class="board-column columnwidth ${grid[j][i].state}">
+      htmlString += `<div class="board-column columnwidth ${
+        grid[j][i].state
+      }" role="cell">
       <label for="${j}${i}">
-      <input type="radio" id="${j}${i}" name="cell" ${disabled} required>
+      <input type="radio" id="${j}${i}" name="cell" ${disabled} required aria-label=${
+        ariaLabels[grid[j][i].state]
+      }>
       <span> </span>
       </label></div>`;
     }
@@ -218,23 +264,27 @@ function enableForm(formClass) {
 
 function displayTurnResult(data, coordinates) {
   const cellId = `${coordinates.x}${coordinates.y}`;
-  console.log(cellId);
 
   const cellClass = data.hit ? 'hit' : 'miss';
-  console.log(cellClass);
+
   $(`#${cellId}`)
     .closest('div')
     .removeClass('empty');
   $(`#${cellId}`)
     .closest('div')
-    .addClass(cellClass);
+    .addClass(cellClass)
+    .addClass('anim');
   $(`#${cellId}`).prop('checked', false);
   $(`#${cellId}`).attr('disabled', 'disabled');
 
   // Update turn information
   setOpponetsTurn();
 
-  socket.emit('turn', { roomId: CURRENT_GAME.roomId, coordinates });
+  socket.emit('turn', {
+    roomId: CURRENT_GAME.roomId,
+    coordinates,
+    result: cellClass
+  });
 
   // check if game is finished
   if (data.finished) {
@@ -244,31 +294,47 @@ function displayTurnResult(data, coordinates) {
       winner: data.winner
     });
   }
+
+  // update game state in text format
+  $('.status-update p').text(
+    `You've made a move at coordinates ${coordinates.x + 1}, ${coordinates.y +
+      1}. The result is ${cellClass}.`
+  );
 }
 
+/** Page view when it's opponent's turn */
 function setOpponetsTurn() {
+  setGameInfo(`Enemy is making a move`);
+  $('.battleship-game p').text('Enemy ships');
+  $('.spinner').show();
   disableForm('battleship-game');
   $('.game').removeClass('players-turn');
-  setGameInfo(`Opponent's turn`);
   $('.navigation').removeClass('active');
 }
 
+/** Page view when it's player's turn */
 function setPlayersTurn() {
+  setGameInfo('Your move');
+  $('.battleship-game p').text('Select target');
+  $('.spinner').hide();
   enableForm('battleship-game');
   $('.game').addClass('players-turn');
-  setGameInfo('Your turn');
   $('.navigation').addClass('active');
 }
 
+/**Page view when current game is finished */
 function setGameFinished(isWinner) {
+  $('.spinner').hide();
   setGameInfo('Game over');
   $('.game').removeClass('players-turn');
-  $('.game-complete')
-    .find('p')
-    .text(`You ${isWinner ? 'win' : 'loose'}!`);
+  $('.game-complete p').text(`You ${isWinner ? 'win' : 'loose'}!`);
   $('.game-complete').show();
   disableForm('battleship-game');
   $('.navigation').addClass('active');
+  $('.status-update p').text(
+    `Game is finished! You ${isWinner ? 'win' : 'loose'}!`
+  );
+  $('body').scrollTop(0);
 }
 
 function getTurnResult(coordinates, callback) {
@@ -295,10 +361,11 @@ function getTurnResult(coordinates, callback) {
   $.ajax(settings);
 }
 
+/** Manages current game display based on game status (who's turn, whether game is finished etc)  */
 function displayGameInfo() {
   if (!CURRENT_GAME.opponentId) {
     setGameInfo(
-      'Waiting for someone to join...<a href="" target="_self"><i class="fas fa-question-circle"></i></a>'
+      'Waiting for someone to join <a href="" target="_self" aria-label="Go back to previous screen to copy join game link">?</a>'
     );
     return;
   }
@@ -342,13 +409,15 @@ function displayPlayersBoard() {
   // generate html for displaying the grid
   let gridHtml = '';
   for (let i = 0; i < 10; i++) {
-    gridHtml += '<div class="board-row">';
+    gridHtml += '<div class="board-row" role="row">';
     for (let j = 0; j < 10; j++) {
       let shipCanvas = grid[j][i].state.includes('ship')
         ? `<canvas id="canvas${j}${i}" width="24" height="24"></canvas>`
         : '';
-      gridHtml += `<div class="board-column columnwidth"><div id="board${j}${i}" class="board ${
+      gridHtml += `<div class="board-column columnwidth" role="cell"><div id="board${j}${i}" class="board ${
         grid[j][i].state
+      }" aria-label="${
+        ariaLabels[grid[j][i].state]
       }">${shipCanvas}</div></div>`;
     }
     gridHtml += '</div>';
