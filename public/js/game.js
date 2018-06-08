@@ -185,7 +185,6 @@ function generateJoinLink() {
  */
 function updateOpponentMove(coordinates) {
   const cellId = `board${coordinates.x}${coordinates.y}`;
-  console.log(cellId);
   $('.players-board')
     .find(`#${cellId}`)
     .addClass('shot')
@@ -265,10 +264,9 @@ function enableForm(formClass) {
 
 function displayTurnResult(data, coordinates) {
   const cellId = `${coordinates.x}${coordinates.y}`;
-  console.log(cellId);
 
   const cellClass = data.hit ? 'hit' : 'miss';
-  console.log(cellClass);
+
   $(`#${cellId}`)
     .closest('div')
     .removeClass('empty');
@@ -307,10 +305,7 @@ function displayTurnResult(data, coordinates) {
 /** Page view when it's opponent's turn */
 function setOpponetsTurn() {
   setGameInfo(`Enemy is making a move`);
-  $('.battleship-game')
-    .find('legend')
-    .find('p')
-    .text('Enemy ships');
+  $('.battleship-game p').text('Enemy ships');
   $('.spinner').show();
   disableForm('battleship-game');
   $('.game').removeClass('players-turn');
@@ -320,10 +315,7 @@ function setOpponetsTurn() {
 /** Page view when it's player's turn */
 function setPlayersTurn() {
   setGameInfo('Your move');
-  $('.battleship-game')
-    .find('legend')
-    .find('p')
-    .text('Select target');
+  $('.battleship-game p').text('Select target');
   $('.spinner').hide();
   enableForm('battleship-game');
   $('.game').addClass('players-turn');
@@ -335,15 +327,14 @@ function setGameFinished(isWinner) {
   $('.spinner').hide();
   setGameInfo('Game over');
   $('.game').removeClass('players-turn');
-  $('.game-complete')
-    .find('p')
-    .text(`You ${isWinner ? 'win' : 'loose'}!`);
+  $('.game-complete p').text(`You ${isWinner ? 'win' : 'loose'}!`);
   $('.game-complete').show();
   disableForm('battleship-game');
   $('.navigation').addClass('active');
   $('.status-update p').text(
     `Game is finished! You ${isWinner ? 'win' : 'loose'}!`
   );
+  $('body').scrollTop(0);
 }
 
 function getTurnResult(coordinates, callback) {
