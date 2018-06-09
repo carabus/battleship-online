@@ -4,7 +4,7 @@ Battleship Online is a lightweight and casual game of battleship for 2 players.
 The idea behind the app was to get players to play the game with as little extra steps as possible.
 That is why players do not have to register, come up with smart and funny username or even draw battleships on the grid. All that stuff is randomly generated so players can just play.
 
-## Start game process
+## Starting a game
 
 When Player #1 starts a new game, a link to the game room is generated.
 Player #1 then sends this link to Player #2, using his favourite messaging app, so that Player #2 can join the game.
@@ -16,7 +16,7 @@ Once game room is complete, players exchange turns until one of the players unco
 
 ## Video Demo
 
-TBD
+* ![Video Demo](ttps://raw.githubusercontent.com/carabus/battleship-online/master/screenshots/vide-demo.gif)
 
 ## Screenshots
 
@@ -64,8 +64,9 @@ TBD
 ## Nice to have features
 
 * Ability to restart the game with the same opponent without having to re-send the link
+* Ability to differentiate between "hitting" the ship and "killing" the ship and deactivate squares around "killed" ship
 * Ability to view the list of games I am currently playing and continue playing it
-* High score board
+* High scores board
 
 ## Attribution
 
