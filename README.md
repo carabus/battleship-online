@@ -16,7 +16,7 @@ Once game room is complete, players exchange turns until one of the players unco
 
 ## Video Demo
 
-* ![Video Demo](ttps://raw.githubusercontent.com/carabus/battleship-online/master/screenshots/vide-demo.gif)
+* ![Video Demo](https://raw.githubusercontent.com/carabus/battleship-online/master/screenshots/video-demo.gif)
 
 ## Screenshots
 
