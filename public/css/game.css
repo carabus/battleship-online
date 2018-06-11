@@ -54,11 +54,11 @@ main {
 }
 
 .join-game-link {
+  border-radius: 0;
   overflow: hidden;
   white-space: nowrap;
   display: inline-block;
   width: 200px;
-  text-overflow: ellipsis;
   font-family: 'Lato', sans-serif;
   font-size: 18px;
   padding: 16px;
@@ -358,7 +358,7 @@ p.board-name {
 
 @media only screen and (min-width: 1000px) {
   .join-game-link {
-    width: unset;
+    width: 500px;
   }
 }
 
