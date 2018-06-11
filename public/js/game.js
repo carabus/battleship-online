@@ -116,37 +116,41 @@ function displayGame() {
 
 /** If player is first to join the game, display instructions how other player can join */
 function displayIncompleteRoomMessage() {
-  $('.join-game-link').text(generateJoinLink());
+  $('.join-game-link').val(generateJoinLink());
+  //$('.join-game-link').text(generateJoinLink());
   $('.game-incomplete').show();
+}
+
+function iosCopyToClipboard(el) {
+  document.execCommand('copy');
 }
 
 /** Copy url to be used to join the game */
 function handleCopyLink() {
   $('.copy').on('click', function(event) {
-    var $temp = $('<input id="temp">');
-    $temp.val($('.join-game-link').text());
-    $('body').append($temp);
+    // this is to make it work in ios
+    if (navigator.userAgent.match(/ipad|iphone/i)) {
+      let el = $('.join-game-link').get(0);
+      let oldContentEditable = el.contentEditable,
+        oldReadOnly = el.readOnly,
+        range = document.createRange();
 
-    // This is required to workaround security features in iOS
-    if (navigator.userAgent.match('/ipad|ipod|iphone/i')) {
-      var el = $('#temp').get(0);
-      var editable = el.contentEditable;
-      var readOnly = el.readOnly;
-      el.contentEditable = true;
-      el.readOnly = true;
-      var range = document.createRange();
+      el.contenteditable = true;
+      el.readonly = false;
       range.selectNodeContents(el);
-      var sel = window.getSelection();
-      sel.removeAllRanges();
-      sel.addRange(range);
-      el.setSelectionRange(0, 999999);
-      el.contentEditable = editable;
-      el.readOnly = readOnly;
+
+      let s = window.getSelection();
+      s.removeAllRanges();
+      s.addRange(range);
+
+      el.setSelectionRange(0, 999999); // A big number, to cover anything that could be inside the element.
+
+      el.contentEditable = oldContentEditable;
+      el.readOnly = oldReadOnly;
     } else {
-      $temp.select();
+      $('.join-game-link').select();
     }
     document.execCommand('copy');
-    $temp.remove();
     $('.copy').attr('title', 'Copied');
   });
 }

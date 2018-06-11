@@ -12,6 +12,8 @@ Once game room is complete, players exchange turns until one of the players unco
 
 ## Demo
 
+To simulate 2 different players, open the game in 2 different browsers as user identity is tied to the browser local storage.
+
 * [Live Demo](https://carabus-battleship.herokuapp.com/)
 
 ## Video Demo
