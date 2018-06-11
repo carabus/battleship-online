@@ -10,7 +10,7 @@ function handleApp() {
 }
 
 function displayPage(playerId) {
-  $('.player').text(window.localStorage.playerId);
+  $('.player').text(sessionStorage.playerId);
   $('.new-game-section').show();
 }
 
@@ -31,7 +31,7 @@ function handlePlayerUpdate() {
   $('.player').on('click', function(event) {
     createPlayerName(function(playerId) {
       setPlayer(playerId);
-      $('.player').text(window.localStorage.playerId);
+      $('.player').text(sessionStorage.playerId);
     });
   });
 }

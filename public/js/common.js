@@ -6,7 +6,7 @@
  * then display app page
  */
 function getOrCreatePlayer() {
-  let playerId = window.localStorage.getItem('playerId');
+  let playerId = sessionStorage.playerId;
   if (playerId) {
     handleApp();
   } else {
@@ -34,7 +34,7 @@ function setPlayerAndHandleApp(playerId) {
 }
 
 function setPlayer(playerId) {
-  window.localStorage.setItem('playerId', playerId);
+  window.sessionStorage.setItem('playerId', playerId);
 }
 
 function createAndJoinGame() {
@@ -42,10 +42,12 @@ function createAndJoinGame() {
   window.location.replace(`/join/${roomId}`);
 }
 
-function displayErrorMessage() {
-  $('.error')
-    .find('p')
-    .text('Oops... There was an error.');
+function displayErrorMessage(msg) {
+  let errorMsg = 'Oops... There was an error.';
+  if (msg) {
+    errorMsg = `${errorMsg} ${msg}`;
+  }
+  $('.error p').text(errorMsg);
   $('.error').show();
 }
 

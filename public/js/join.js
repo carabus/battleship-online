@@ -9,7 +9,7 @@ function handleApp() {
 /** Send API request to create new game for this playerId */
 function joinGame(callback) {
   const dataObject = {
-    playerId: localStorage.playerId,
+    playerId: sessionStorage.playerId,
     roomId: roomId
   };
 
@@ -20,7 +20,10 @@ function joinGame(callback) {
     data: JSON.stringify(dataObject),
     type: 'POST',
     success: callback,
-    error: displayErrorMessage
+    error: function(xhr, status, error) {
+      console.log(xhr.responseText);
+      displayErrorMessage(xhr.responseText);
+    }
   };
 
   $.ajax(settings);

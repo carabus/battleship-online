@@ -27,14 +27,14 @@ router.post('/', jsonParser, async (req, res) => {
     let gamesInRoom = await BattleshipGame.find({ roomId: req.body.roomId });
 
     if (gamesInRoom.length > 1) {
-      const message = `Can not join room ${req.body.roomId}`;
+      const message = `No more than 2 people can join the game room.`;
       console.error(message);
       return res.status(400).send(message);
     }
 
     // same player can not join the room twice
     if (gamesInRoom.length && gamesInRoom[0].playerId === req.body.playerId) {
-      const message = `Can not join the same room twice`;
+      const message = `Can not join the same room twice.`;
       console.error(message);
       return res.status(400).send(message);
     }
