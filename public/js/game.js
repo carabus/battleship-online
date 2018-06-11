@@ -117,7 +117,6 @@ function displayGame() {
 /** If player is first to join the game, display instructions how other player can join */
 function displayIncompleteRoomMessage() {
   $('.join-game-link').val(generateJoinLink());
-  //$('.join-game-link').text(generateJoinLink());
   $('.game-incomplete').show();
 }
 
